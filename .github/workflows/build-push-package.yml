@@ -23,6 +23,7 @@ jobs:
           fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
       - name: "Get node dependencies"
         run: npm ci
+        # make sure that .gitignore has 'node_modules' in it, otherwise all modules will be committed along the built index.js
       - name: "build source"
         run: npm run build
       - name: "Commit & Push changes"
