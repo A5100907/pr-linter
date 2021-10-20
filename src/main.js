@@ -11,6 +11,7 @@ async function main() {
     try {
         logMinimizer("github", github)
         logMinimizer("github.context", github.context)
+        logMinimizer("github.context.issue", github.context.issue)
     } catch (error) {
         logMinimizer("Event context data", github.context)
         core.setFailed(`Action failed. ${error}`)
