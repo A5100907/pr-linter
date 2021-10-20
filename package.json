@@ -1,0 +1,25 @@
+{
+  "name": "pr-linter",
+  "version": "1.0.0",
+  "description": "Check pull request against provided regex",
+  "main": "index.js",
+  "scripts": {
+    "build": "ncc build src/main.js -o dist -m",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/A5100907/pr-linter.git"
+  },
+  "author": "KonstantinZ",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/A5100907/pr-linter/issues"
+  },
+  "homepage": "https://github.com/A5100907/pr-linter#readme",
+  "dependencies": {
+    "@actions/core": "^1.4.0",
+    "@actions/github": "^5.0.0",
+    "@vercel/ncc": "^0.28.6"
+  }
+}
