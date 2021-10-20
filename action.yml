@@ -1,0 +1,15 @@
+name: "pull-request-linter"
+description: "Check pull requests title against provided regex"
+author: "KonstantinZ"
+
+inputs:
+  github_token:
+    description: "GitHub token"
+    required: true
+  regex:
+    description: "Semicolon separated list of Regex patterns"
+    required: true
+
+runs:
+  using: "node12"
+  main: "dist/index.js"
