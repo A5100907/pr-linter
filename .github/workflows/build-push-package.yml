@@ -1,0 +1,32 @@
+# This action builds the code from /src, build output is in /dist
+# After app is built it is submitted back to source control
+name: "Build application with dependencies and submit full package to the branch (/dist)"
+
+on:
+  push:
+    branches:
+      - main
+      - feature/*
+jobs:
+  build:
+    name: "Build and submit"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Extract branch name"
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+      - name: "Get the source"
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+          fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
+      - name: "Get node dependencies"
+        run: npm ci
+      - name: "build source"
+        run: npm run build
+      - name: "Commit & Push changes"
+        uses: actions-js/push@v1.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ steps.extract_branch.outputs.branch }}
