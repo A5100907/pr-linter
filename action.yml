@@ -6,9 +6,25 @@ inputs:
   github_token:
     description: "GitHub token"
     required: true
-  regex:
-    description: "Semicolon separated list of Regex patterns"
+  
+  title-regex:
+    description: "Semicolon separated list of Regex patterns to validate PR's title against"
     required: true
+  
+  fail-action-on-regex-failure:
+    description: "Shall the github action raise a failure if regex is not valid"
+    required: false
+    default: true
+  
+  comment-on-regex-failure:
+    description: "Comment for the bot to post on PRs that fail the regex. Use %regex% to reference regex."
+    required: false
+    default: "PR title failed to match %regex%."
+
+  request-changes-on-regex-failure:
+    description: "Whether the action should request changes or just provide a comment."
+    required: false
+    default: true
 
 runs:
   using: "node12"
