@@ -9,10 +9,10 @@ async function main() {
 
     
     try {
-        core.info(github)
-        core.info(github.context)
+        logMinimizer("github", github)
+        logMinimizer("github.context", github.context)
     } catch (error) {
-        logMinimizer("Event context data",github.context)
+        logMinimizer("Event context data", github.context)
         core.setFailed(`Action failed. ${error}`)
     }
 }
