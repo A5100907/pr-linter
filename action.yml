@@ -12,7 +12,7 @@ inputs:
     required: true
   
   fail-action-on-regex-failure:
-    description: "Shall the github action raise a failure if regex is not valid"
+    description: "Shall the github action raise a failure if regex is not valid. (true/false)"
     required: false
     default: true
   
@@ -22,7 +22,7 @@ inputs:
     default: "PR title failed to match %regex%."
 
   request-changes-on-regex-failure:
-    description: "Whether the action should request changes or just provide a comment."
+    description: "Whether the action should request changes or just provide a comment. (true/false)"
     required: false
     default: true
 
