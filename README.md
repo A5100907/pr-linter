@@ -5,15 +5,15 @@ Validates a syntax of the pull request title against specified regexes.
 ## Using the action
 
 ### Inputs
-* __github_token__ - GitHub authentication token, can be passed in as '${{ secrets.GITHUB_TOKEN }}'. Make sure to add write permission to content!
+* __github_token__ - GitHub authentication token, can be passed in as '${{ secrets.GITHUB_TOKEN }}'.
     * required: true
 
 * __title_regex__ - Semicolon separated list of Regex patterns to validate the pull request title against
     * required: true
-    * NOTE: Do not use " or ' characters to wrap the string with, pass as is (see example)
+    * NOTE: Do not use " or ' characters to wrap the string, pass as is (see example)
 
 ### Usage
-#### Example 1:
+#### Example:
 ```
 name: "Pull Request Linter"
  
@@ -25,8 +25,6 @@ jobs:
   execute:
     name: pr-linter
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - name: run-pr-linter
         uses: A5100907/pr-linter@feature/SDO-2516
@@ -48,7 +46,7 @@ jobs:
 
   * Invalid:
   ```
-  [IQ4-101]Invalid
-  [I4-1]:Invalid
-  [IA-11] Title @#$%^&*{};\/~`
+  [IQ4-101]Invalid PR title because there is no space between a ticket and the beginning of the description
+  [I4-1]:Invalid because ':' is not a valid character
+  [IA-11] Title @#$%^&*{};\/~:` these are the characters that are not allowed
   ```
