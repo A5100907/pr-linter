@@ -12,9 +12,11 @@ async function main() {
         logSeparator()
 
         if (isPrTitleValid(regex_patterns, pr_title)) {
+            logSeparator()
             core.info("Exiting gracefully ...")
             return
         } else {
+            logSeparator()
             core.error("PR Title did not pass regex validation.")
             throw new Error("Pull Request did not pass naming rules policy!")
         }
