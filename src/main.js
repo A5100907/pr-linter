@@ -2,7 +2,7 @@ const core = require("@actions/core")
 const github = require("@actions/github")
 
 async function main() {
-    const regex_patterns = core.getInput("title-regex").split(";")
+    const regex_patterns = core.getInput("title_regex").split(";")
     const pr_title = github.context.payload.pull_request.title
     
     try {
