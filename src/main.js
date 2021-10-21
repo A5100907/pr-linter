@@ -3,18 +3,24 @@ const github = require("@actions/github")
 
 async function main() {
     const regex_patterns = core.getInput("title-regex").split(";")
-    const raise_failure = core.getBooleanInput("fail-action-on-regex-failure")
-    const request_changes = core.getBooleanInput("request-changes-on-regex-failure")
-    const failure_comment = core.getInput("comment-on-regex-failure")
-
+    const pr_title = github.context.payload.pull_request.title
     
     try {
-        logMinimizer("github", github)
+        logSeparator()
         logMinimizer("github.context", github.context)
-        logMinimizer("github.context.issue", github.context.issue)
         logMinimizer("github.context.payload.pull_request.title", github.context.payload.pull_request.title)
+        logSeparator()
+
+        if (isPrTitleValid(regex_patterns, pr_title)) {
+            core.info("Exiting gracefully ...")
+            return
+        } else {
+            core.error("PR Title did not pass regex validation.")
+            throw new Error("Pull Request did not pass naming rules policy!")
+        }
+
+
     } catch (error) {
-        logMinimizer("Event context data", github.context)
         core.setFailed(`Action failed. ${error}`)
     }
 }
@@ -31,9 +37,38 @@ function logSeparator() {
     core.info("=".repeat(80))
 }
 
-// TODO Remove, this is for debug prints
-function typeOf(obj) {
-    return {}.toString.call(obj).split(' ')[1].slice(0, -1).toLowerCase();
+function isPrTitleValid(regexes, pr_title) {
+    // Validates a PR title against a list of regex patterns
+    // Need to match at least one pattern for it to be valid
+    // Returns false if not valid, true if valid
+    core.debug("Running 'isPrTitleValid()' ...")
+    let pr_title_is_valid = false
+    try {
+        regexes.forEach(pattern => {
+            core.info(`Validating '${pr_title}' against '${pattern}'`)
+            const regex = RegExp(pattern)
+            if (regex.test(pr_title)) {
+                core.info("Match.")
+                pr_title_is_valid = true
+            } else {
+                core.info("Not a match.")
+            }
+        })
+
+        if (pr_title_is_valid) {
+            core.info("PR Title matched at least one pattern.")
+            core.info("PR Title is valid.")
+            return true
+        }
+        core.warning("PR Title did not match against any of the allowed regex patterns.")
+        core.warning("Please refer to the PR Title naming policy for your project.")
+        return false
+    } catch (error) {
+        core.error(error)
+        core.error("Something went wrong in regex pattern validation!")
+        core.error("Contact Fusion DevOps team <fusion_devops@johnsoncontrols365.onmicrosoft.com>")
+        throw new Error("isPrTitleValid() failed.")
+    }
 }
 
 main()
