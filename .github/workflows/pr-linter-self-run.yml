@@ -1,0 +1,17 @@
+name: "Pull Request Linter"
+ 
+on:
+  workflow_call:
+ 
+jobs:
+  execute:
+    name: pr-linter-job
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: pr-linter-step
+        uses: A5100907/pr-linter@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          title_regex: ^\[([A-Z0-9]{1,6}-[0-9]{1,6}|BF|MERGE)\] ([a-zA-Z0-9 \!\?\'\"\=\.\,\(\)\_\-\+\>\<\/\@\:\$\%\&\*\#])+$
