@@ -3,30 +3,33 @@ const github = require("@actions/github")
 
 async function main() {
     const regex_patterns = core.getInput("title_regex").split(";")
-    const enable_tagger = (core.getInput("enable_tagger") === "true")
+    const enable_labeler = (core.getInput("enable_labeler") === "true")
     const pr_title = github.context.payload.pull_request.title
     
     try {
-        logSeparator()
-        core.info(`tagger flag: ${enable_tagger}`)
-        core.info(`type: ${typeof enable_tagger}`)
         logSeparator()
         logMinimizer("github.context", github.context)
         logMinimizer("github.context.payload.pull_request.title", github.context.payload.pull_request.title)
         logSeparator()
 
-        if (isPrTitleValid(regex_patterns, pr_title)) {
-            logSeparator()
-            core.info("Exiting gracefully ...")
-            return
-        } else {
+        if (!isPrTitleValid(regex_patterns, pr_title)) {
             logSeparator()
             core.error("PR Title did not pass regex validation.")
             throw new Error("Pull Request did not pass naming rules policy!")
         }
-
-
-    } catch (error) {
+        logSeparator()
+        if (enable_labeler) {
+            core.info('PR auto-label is enabled for the repo')
+            if (isRepoMultiPrj()) {
+                core.info('PLACEHOLDER')
+            }
+            else { core.info("Single-project repo, skipping auto-labeler") }
+        } else { core.info('PR auto-label is disabled for the repo, skipping ...') }
+            
+        core.info("Exiting gracefully ...")
+        return
+    } 
+    catch (error) {
         core.setFailed(`Action failed. ${error}`)
     }
 }
@@ -75,6 +78,12 @@ function isPrTitleValid(regexes, pr_title) {
         core.error("Contact Fusion DevOps team <fusion_devops@johnsoncontrols365.onmicrosoft.com>")
         throw new Error("isPrTitleValid() failed.")
     }
+}
+
+function isRepoMultiPrj() {
+    // Return true if repo is multi-project, false otherwise.
+    core.info('PLACEHOLDER')
+    return true
 }
 
 main()
