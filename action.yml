@@ -11,6 +11,11 @@ inputs:
     description: "Semicolon separated list of Regex patterns to validate PR's title against"
     required: true
   
+  enable_tagger:
+    description: "On/Off auto tagging feature for multi-project repos. Default is On"
+    required: false
+    default: false
+  
 runs:
   using: "node12"
   main: "dist/index.js"
