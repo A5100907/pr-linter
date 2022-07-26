@@ -4,10 +4,12 @@ const github = require("@actions/github")
 async function main() {
     const regex_patterns = core.getInput("title_regex").split(";")
     const enable_tagger = core.getInput("enable_tagger")
-    core.info(`tagger flag: ${enable_tagger}; type: ${typeof enable_tagger}`)
     const pr_title = github.context.payload.pull_request.title
     
     try {
+        logSeparator()
+        core.info(`tagger flag: ${enable_tagger}`)
+        core.info(`type: ${typeof enable_tagger}`)
         logSeparator()
         logMinimizer("github.context", github.context)
         logMinimizer("github.context.payload.pull_request.title", github.context.payload.pull_request.title)
