@@ -12,7 +12,8 @@ jobs:
       contents: write
     steps:
       - name: pr-linter-step
-        uses: A5100907/pr-linter@v1
+      # TODO remove feature reference from self run or disable it
+        uses: A5100907/pr-linter@feature/SDO-3120
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           title_regex: ^\[([A-Z0-9]{1,6}-[0-9]{1,6}|BF|MERGE)\] ([a-zA-Z0-9 \!\?\'\"\=\.\,\(\)\_\-\+\>\<\/\@\:\$\%\&\*\#])+$
