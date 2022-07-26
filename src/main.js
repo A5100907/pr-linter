@@ -19,9 +19,9 @@ async function main() {
         }
         logSeparator()
         if (enable_labeler) {
-            core.info('PR auto-label is enabled for the repo')
+            core.info("PR auto-label is enabled for the repo")
             if (isRepoMultiPrj()) {
-                core.info('PLACEHOLDER')
+                core.info("PLACEHOLDER")
             }
             else { core.info("Single-project repo, skipping auto-labeler") }
         } else { core.info('PR auto-label is disabled for the repo, skipping ...') }
@@ -82,7 +82,7 @@ function isPrTitleValid(regexes, pr_title) {
 
 function isRepoMultiPrj() {
     // Return true if repo is multi-project, false otherwise.
-    core.info('PLACEHOLDER')
+    core.info("PLACEHOLDER")
     return true
 }
 

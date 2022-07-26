@@ -11,7 +11,7 @@ inputs:
     description: "Semicolon separated list of Regex patterns to validate PR's title against"
     required: true
   
-  enable_tagger:
+  enable_labeler:
     description: "On/Off auto tagging feature for multi-project repos. Default is On"
     required: false
     default: true
