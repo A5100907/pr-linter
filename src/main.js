@@ -3,7 +3,7 @@ const github = require("@actions/github")
 
 async function main() {
     const regex_patterns = core.getInput("title_regex").split(";")
-    const enable_tagger = core.getInput("enable_tagger")
+    const enable_tagger = (core.getInput("enable_tagger") === "true")
     const pr_title = github.context.payload.pull_request.title
     
     try {

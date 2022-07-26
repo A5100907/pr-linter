@@ -14,7 +14,7 @@ inputs:
   enable_tagger:
     description: "On/Off auto tagging feature for multi-project repos. Default is On"
     required: false
-    default: false
+    default: true
   
 runs:
   using: "node12"
