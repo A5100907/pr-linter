@@ -19,6 +19,11 @@ async function main() {
         }
         logSeparator()
         if (enable_labeler) {
+            const tmp_base = github.context.payload.pull_request.base
+            const tmp_head = github.context.payload.pull_request.head
+            core.info(`base: ${tmp_base}`)
+            core.info(`base: ${tmp_head}`)
+
             core.info("PR auto-label is enabled for the repo")
             if (isRepoMultiPrj()) {
                 core.info("PLACEHOLDER")

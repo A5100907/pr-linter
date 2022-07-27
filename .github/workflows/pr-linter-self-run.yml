@@ -13,6 +13,7 @@ jobs:
     steps:
       - name: pr-linter-step
       # TODO remove feature reference from self run or disable it
+        # uses: A5100907/pr-linter@v1
         uses: A5100907/pr-linter@feature/SDO-3120
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
