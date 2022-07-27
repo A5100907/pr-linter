@@ -10,7 +10,7 @@ async function main() {
     const regex_patterns = core.getInput("title_regex").split(";")
     const enable_labeler = (core.getInput("enable_labeler") === "true")
     const gh_token = core.getInput("github_token")
-    const octokit = github.getOctokit(token)
+    const octokit = github.getOctokit(gh_token)
     const pr_title = github.context.payload.pull_request.title
     
     try {
