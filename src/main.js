@@ -11,6 +11,7 @@ async function main() {
     const enable_labeler = (core.getInput("enable_labeler") === "true")
     const gh_token = core.getInput("github_token")
     const octokit = github.getOctokit(gh_token)
+    
     const pr_title = github.context.payload.pull_request.title
     
     try {
@@ -32,12 +33,15 @@ async function main() {
         if (enable_labeler) {
             core.info("PR auto-label is enabled for the repo ...")
             // get values for labeler execution
-
             const pr_head = github.context.payload.pull_request.head.ref
-            const prj_labels = new Array(getProjectLabel(pr_head))
+            const prj_label = getProjectLabel(pr_head)
 
-            if (prj_labels.length) {
-                await addLabels(octokit, prj_labels)
+            if (prj_label) {
+                // run labeler
+                const pr_labels = await getIssueLabels(octokit)
+                const new_labels = new Array(prj_label)
+
+                await addLabels(octokit, new_labels)
             }
             else { core.info("Skipping auto-labeler.") }
         }
@@ -114,7 +118,7 @@ function getProjectLabel(head) {
     if ((items.length == 2) && (items[1].toLowerCase() == 'develop')) { return items[0] }
 
     core.info("branch name did not qualify for a project label extraction.")
-    return
+    return null
 }
 
 async function addLabels(octokit, prj_labels) {
@@ -123,20 +127,35 @@ async function addLabels(octokit, prj_labels) {
         core.info(`repo: ${github.context.repo.repo}`)
         core.info(`issue_number: ${github.context.payload.pull_request.number}`)
         core.info(`labels: ${prj_labels}`)
-        const response = await octokit.rest.issues.addLabels({
+        await octokit.rest.issues.addLabels({
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
             issue_number: github.context.payload.pull_request.number,
             labels: prj_labels,
         })
-        // core.info(response)
     }
     catch (e) {
-        // core.info(response)
         core.error(e);
         core.setFailed(e.message);
     }
+}
 
-  }
-
+async function getIssueLabels(octokit) {
+    try {
+        core.info(`owner: ${github.context.repo.owner}`)
+        core.info(`repo: ${github.context.repo.repo}`)
+        core.info(`issue_number: ${github.context.payload.pull_request.number}`)
+        const response = await octokit.rest.issues.listLabelsOnIssue({
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
+            issue_number: github.context.payload.pull_request.number,
+        })
+        logMinimizer(response, "response")
+        return response
+    }
+    catch (e) {
+        core.error(e);
+        core.setFailed(e.message);
+    }
+}
 main()
