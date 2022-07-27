@@ -39,6 +39,7 @@ async function main() {
             if (prj_label) {
                 // run labeler
                 const pr_labels = await getIssueLabels(octokit)
+                logMinimizer("pr_labels", pr_labels)
                 
                 // check if pr already has expected label
                 if (pr_labels.indexOf(prj_label) > -1) {
@@ -130,6 +131,7 @@ function getProjectLabel(head) {
 async function addLabels(octokit, prj_labels) {
     // add specified label to current PR
     try {
+        core.info("Adding a label(s) to the PR ...")
         core.info(`owner: ${github.context.repo.owner}`)
         core.info(`repo: ${github.context.repo.repo}`)
         core.info(`issue_number: ${github.context.payload.pull_request.number}`)
@@ -150,15 +152,12 @@ async function addLabels(octokit, prj_labels) {
 async function getIssueLabels(octokit) {
     // return list of label objects of all labels on current PR
     try {
-        core.info(`owner: ${github.context.repo.owner}`)
-        core.info(`repo: ${github.context.repo.repo}`)
-        core.info(`issue_number: ${github.context.payload.pull_request.number}`)
         const response = await octokit.rest.issues.listLabelsOnIssue({
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
             issue_number: github.context.payload.pull_request.number,
         })
-        logMinimizer("response", response)
+        logMinimizer("octokit.rest.issues.listLabelsOnIssue() response", response)
         return response.data
     }
     catch (e) {
