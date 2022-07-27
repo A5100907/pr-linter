@@ -129,10 +129,10 @@ async function addLabels(octokit, prj_labels) {
             issue_number: github.context.payload.pull_request.number,
             labels: prj_labels,
         })
-        core.info(response)
+        // core.info(response)
     }
     catch (e) {
-        core.info(response)
+        // core.info(response)
         core.error(e);
         core.setFailed(e.message);
     }
