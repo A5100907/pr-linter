@@ -148,8 +148,8 @@ async function addLabels(octokit, prj_labels) {
         })
     }
     catch (e) {
-        core.error(e);
-        core.setFailed(e.message);
+        core.error(e)
+        core.setFailed(e.message)
     }
 }
 
@@ -161,12 +161,12 @@ async function getIssueLabels(octokit) {
             repo: github.context.repo.repo,
             issue_number: github.context.payload.pull_request.number,
         })
-        logMinimizer("octokit.rest.issues.listLabelsOnIssue() response.data", response.data)
+
         return response.data
     }
     catch (e) {
-        core.error(e);
-        core.setFailed(e.message);
+        core.error(e)
+        core.setFailed(e.message)
     }
 }
 
