@@ -114,7 +114,7 @@ function getProjectLabel(head) {
     if ((items.length == 2) && (items[1].toLowerCase() == 'develop')) { return items[0] }
 
     core.info("branch name did not qualify for a project label extraction.")
-    return null
+    return
 }
 
 async function addLabels(octokit, prj_labels) {
