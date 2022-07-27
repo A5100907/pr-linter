@@ -38,9 +38,11 @@ async function main() {
 
             if (prj_label) {
                 // run labeler
-                const pr_labels = await getIssueLabels(octokit)
-                logMinimizer("pr_labels", pr_labels)
-
+                const pr_labels_obj = await getIssueLabels(octokit)
+                // convert full label data into a simple array of label names
+                const pr_labels = pr_labels_obj.nap(function (item) { return item.name}) 
+                logMinimizer("Current PR Labels", pr_labels)
+                
                 // check if pr already has expected label
                 if (pr_labels.indexOf(prj_label) > -1) {
                     console.log(`PR already has the label '${prj_label}' attached.`)
@@ -54,7 +56,7 @@ async function main() {
             }
             else { core.info("Skipping auto-labeler.") }
         }
-        else { core.info('PR auto-label is disabled for the repo, skipping.') }
+        else { core.info("PR auto-label is disabled for the repo, skipping.") }
 
         // end of the main block
         logSeparator()
@@ -137,7 +139,7 @@ async function addLabels(octokit, prj_labels) {
         core.info(`owner: ${github.context.repo.owner}`)
         core.info(`repo: ${github.context.repo.repo}`)
         core.info(`issue_number: ${github.context.payload.pull_request.number}`)
-        core.info(`labels: ${prj_labels}`)
+        logMinimizer("label(s) to add", prj_labels)
         await octokit.rest.issues.addLabels({
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
@@ -159,7 +161,7 @@ async function getIssueLabels(octokit) {
             repo: github.context.repo.repo,
             issue_number: github.context.payload.pull_request.number,
         })
-        logMinimizer("octokit.rest.issues.listLabelsOnIssue() response", response)
+        logMinimizer("octokit.rest.issues.listLabelsOnIssue() response.data", response.data)
         return response.data
     }
     catch (e) {
