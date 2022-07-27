@@ -40,14 +40,16 @@ async function main() {
                 // run labeler
                 const pr_labels = await getIssueLabels(octokit)
                 logMinimizer("pr_labels", pr_labels)
-                
+
                 // check if pr already has expected label
                 if (pr_labels.indexOf(prj_label) > -1) {
+                    console.log(`PR already has the label '${prj_label}' attached.`)
+                }
+                else { 
                     // add the label to the PR
                     const new_labels = new Array(prj_label)
                     await addLabels(octokit, new_labels)
                 }
-                else { console.log(`PR already has the label '${prj_label}' attached.`) }
 
             }
             else { core.info("Skipping auto-labeler.") }
