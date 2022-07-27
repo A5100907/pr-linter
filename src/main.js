@@ -123,14 +123,16 @@ async function addLabels(octokit, prj_labels) {
         core.info(`repo: ${github.context.repo.repo}`)
         core.info(`issue_number: ${github.context.payload.pull_request.number}`)
         core.info(`labels: ${prj_labels}`)
-        await octokit.rest.issues.addLabels({
+        const response = await octokit.rest.issues.addLabels({
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
             issue_number: github.context.payload.pull_request.number,
             labels: prj_labels,
         })
+        core.info(response)
     }
     catch (e) {
+        core.info(response)
         core.error(e);
         core.setFailed(e.message);
     }
