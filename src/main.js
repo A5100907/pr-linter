@@ -37,7 +37,7 @@ async function main() {
             const prj_labels = new Array(getProjectLabel(pr_head))
 
             if (prj_labels.length) {
-                addLabels(octokit, prj_labels)
+                await addLabels(octokit, prj_labels)
             }
             else { core.info("Skipping auto-labeler.") }
         }
