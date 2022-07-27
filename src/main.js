@@ -9,6 +9,8 @@ async function main() {
     // set constant values
     const regex_patterns = core.getInput("title_regex").split(";")
     const enable_labeler = (core.getInput("enable_labeler") === "true")
+    const gh_token = core.getInput("github_token")
+    const octokit = github.getOctokit(token)
     const pr_title = github.context.payload.pull_request.title
     
     try {
@@ -29,18 +31,20 @@ async function main() {
         // Feature: auto-labeler
         if (enable_labeler) {
             core.info("PR auto-label is enabled for the repo ...")
-            // get the head branch of the pull request
-            const pr_head = github.context.payload.pull_request.head.ref
-            var prj_label = getProjectLabel(pr_head)
+            // get values for labeler execution
 
-            if (prj_label) {
-                core.info(`PLACEHOLDER. label: ${prj_label}`)
+            const pr_head = github.context.payload.pull_request.head.ref
+            const prj_labels = new Array(getProjectLabel(pr_head))
+
+            if (prj_labels.length) {
+                addLabels(octokit, prj_labels)
             }
             else { core.info("Skipping auto-labeler.") }
         }
         else { core.info('PR auto-label is disabled for the repo, skipping.') }
 
         // end of the main block
+        logSeparator()
         core.info("Exiting gracefully.")
         return
     } 
@@ -112,5 +116,21 @@ function getProjectLabel(head) {
     core.info("branch name did not qualify for a project label extraction.")
     return null
 }
+
+async function addLabels(octokit, prj_labels) {
+    try {
+        await octokit.rest.issues.addLabels({
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
+            issue_number: github.context.payload.pull_request.number,
+            labels: prj_labels,
+        })
+    }
+    catch (e) {
+        core.error(e);
+        core.setFailed(e.message);
+    }
+
+  }
 
 main()
