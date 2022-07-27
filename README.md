@@ -1,5 +1,4 @@
 # Pull Request Linter
-
 Validates a syntax of the pull request title against specified regexes.
 
 ## Using the action
