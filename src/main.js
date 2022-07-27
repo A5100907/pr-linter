@@ -119,6 +119,10 @@ function getProjectLabel(head) {
 
 async function addLabels(octokit, prj_labels) {
     try {
+        core.info(`owner: ${github.context.repo.owner}`)
+        core.info(`repo: ${github.context.repo.repo}`)
+        core.info(`issue_number: ${github.context.payload.pull_request.number}`)
+        core.info(`labels: ${prj_labels}`)
         await octokit.rest.issues.addLabels({
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
