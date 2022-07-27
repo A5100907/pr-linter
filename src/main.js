@@ -40,7 +40,7 @@ async function main() {
                 // run labeler
                 const pr_labels_obj = await getIssueLabels(octokit)
                 // convert full label data into a simple array of label names
-                const pr_labels = pr_labels_obj.nap(function (item) { return item.name}) 
+                const pr_labels = pr_labels_obj.map(function (item) { return item.name}) 
                 logMinimizer("Current PR Labels", pr_labels)
                 
                 // check if pr already has expected label
