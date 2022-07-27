@@ -39,9 +39,15 @@ async function main() {
             if (prj_label) {
                 // run labeler
                 const pr_labels = await getIssueLabels(octokit)
-                const new_labels = new Array(prj_label)
+                
+                // check if pr already has expected label
+                if (pr_labels.indexOf(prj_label) > -1) {
+                    // add the label to the PR
+                    const new_labels = new Array(prj_label)
+                    await addLabels(octokit, new_labels)
+                }
+                else { console.log(`PR already has the label '${prj_label}' attached.`) }
 
-                await addLabels(octokit, new_labels)
             }
             else { core.info("Skipping auto-labeler.") }
         }
@@ -122,6 +128,7 @@ function getProjectLabel(head) {
 }
 
 async function addLabels(octokit, prj_labels) {
+    // add specified label to current PR
     try {
         core.info(`owner: ${github.context.repo.owner}`)
         core.info(`repo: ${github.context.repo.repo}`)
@@ -141,6 +148,7 @@ async function addLabels(octokit, prj_labels) {
 }
 
 async function getIssueLabels(octokit) {
+    // return list of label objects of all labels on current PR
     try {
         core.info(`owner: ${github.context.repo.owner}`)
         core.info(`repo: ${github.context.repo.repo}`)
@@ -150,12 +158,13 @@ async function getIssueLabels(octokit) {
             repo: github.context.repo.repo,
             issue_number: github.context.payload.pull_request.number,
         })
-        logMinimizer(response, "response")
-        return response
+        logMinimizer("response", response)
+        return response.data
     }
     catch (e) {
         core.error(e);
         core.setFailed(e.message);
     }
 }
+
 main()
