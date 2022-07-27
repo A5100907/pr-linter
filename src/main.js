@@ -19,13 +19,10 @@ async function main() {
         }
         logSeparator()
         if (enable_labeler) {
-            const tmp_base = github.context.payload.pull_request.base
-            const tmp_head = github.context.payload.pull_request.head
-            logMinimizer("base: ", tmp_base)
-            logMinimizer("head: ", tmp_head)
+            const pr_head = github.context.payload.pull_request.head.ref
 
             core.info("PR auto-label is enabled for the repo")
-            if (isRepoMultiPrj()) {
+            if (isRepoMultiPrj(pr_head)) {
                 core.info("PLACEHOLDER")
             }
             else { core.info("Single-project repo, skipping auto-labeler") }
@@ -85,9 +82,30 @@ function isPrTitleValid(regexes, pr_title) {
     }
 }
 
-function isRepoMultiPrj() {
+function isRepoMultiPrj(head) {
     // Return true if repo is multi-project, false otherwise.
-    core.info("PLACEHOLDER")
+    core.info(`PR head: ${head}`)
+    // branch_name
+    // feature/*
+    // bugfix/*
+    // merge/*
+    // release/*
+    // develop
+    // main
+    
+    // main
+    // main_unstable
+    // prj/develop
+    // prj/feature/*
+    // prj/bugfix/*
+    // prj/merge/*
+    // prj/release/*
+    
+    // branch_name.split()
+    // 1 - if split produces 3 items; then 1st element is project label
+    // 2 - if split produces 2 items and 2nd element is 'develop'; then 1st element is project label
+    // everything else is skipped (assumed a single project repo or invalid branch for labeler)
+    
     return true
 }
 
