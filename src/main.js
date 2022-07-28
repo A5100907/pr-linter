@@ -34,11 +34,14 @@ async function main() {
 
         // Feature: auto-labeler
         if (enable_labeler) { 
-            if (!await autoLabeler()) {
-                let auto_labeler_error = "Auto labeler encountered an error"
-                core.error(auto_labeler_error)
-                errors.push(auto_labeler_error)
-            }
+            autoLabeler().then(
+                function(value) {},
+                function(error) {
+                    let auto_labeler_error = "Auto labeler encountered an error"
+                    core.error(auto_labeler_error)
+                    errors.push(auto_labeler_error)
+                }
+            )
         }
         else { core.warning("PR auto-label is disabled for the repo, skipping.") }
 
