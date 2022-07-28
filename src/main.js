@@ -180,6 +180,7 @@ async function addLabels(octokit, prj_labels) {
 }
 
 async function getIssueLabels(octokit) {
+    try {
     // return list of label objects of all labels on current PR
     const response = await octokit.rest.issues.listLabelsOnIssue({
         owner: github.context.repo.owner,
@@ -188,6 +189,8 @@ async function getIssueLabels(octokit) {
     })
     core.info("DEBUG 66")
     return response.data
+    }
+    catch(e) { core.error(e) }
 }
 
 main()
