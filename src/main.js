@@ -45,18 +45,14 @@ async function main() {
         }
         else { core.warning("PR auto-label is disabled for the repo, skipping.") }
 
-        if (exec_errors.length) {
-            core.error("Workflow encountered errors, see logs for details!")
-            core.error(exec_errors)
-            throw new Error("Workflow encountered errors, see logs for details!")
-        }
+        if (exec_errors.length) { throw new Error("Workflow encountered errors, see logs for details!") }
 
         // end of the main block
         logSeparator()
         core.info("Exiting gracefully.")
         return
     } 
-    catch (error) { core.setFailed("Workflow execution failed") }
+    catch (error) { core.setFailed(error) }
 }
 
 
@@ -174,26 +170,20 @@ async function addLabels(octokit, prj_labels) {
             labels: prj_labels,
         })
     }
-    catch(e) { 
-        core.error(e)
-        throw new Error(e)
-    }
+    catch(e) { throw new Error(e)}
 }
 
 async function getIssueLabels(octokit) {
     try {
-    // return list of label objects of all labels on current PR
-    const response = await octokit.rest.issues.listLabelsOnIssue({
-        owner: github.context.repo.owner,
-        repo: github.context.repo.repo,
-        issue_number: github.context.payload.pull_request.number,
-    })
-    return response.data
+        // return list of label objects of all labels on current PR
+        const response = await octokit.rest.issues.listLabelsOnIssue({
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
+            issue_number: github.context.payload.pull_request.number,
+        })
+        return response.data
     }
-    catch(e) { 
-        core.error(e)
-        throw new Error(e)
-    }
+    catch(e) { throw new Error(e)}
 }
 
 main()
