@@ -50,3 +50,10 @@ jobs:
   [I4-1]:Invalid because ':' is not a valid character
   [IA-11] Title @#$%^&*{};\/~:` these are the characters that are not allowed
   ```
+
+## Additional features
+### Auto-labeler
+* This Feature will auto add a label to the Pull Request on the multi-project repos. If branch contains a project prefix in its name, auto-labeler will workout project prefix from the branch name and use that as a label.
+* Label properties like color and description can be changed later manually if required.
+* Enabled by default for all repos
+* Can be explicitly disabled by supplying workflow argument `enable_labeler: false` to a step 'run-pr-linter'
