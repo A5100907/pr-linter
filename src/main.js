@@ -1,4 +1,6 @@
 // TODO cleanup form debug prints
+// TODO check if label exists in the repo and if not - create it with unique color and description, then attach to the project
+// string to hex color https://stackoverflow.com/a/66494926
 // import necessary modules
 const core = require("@actions/core")
 const github = require("@actions/github")
