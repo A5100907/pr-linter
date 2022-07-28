@@ -34,7 +34,7 @@ async function main() {
 
         // Feature: auto-labeler
         if (enable_labeler) { 
-            if (!autoLabeler()) {
+            if (!await autoLabeler()) {
                 let auto_labeler_error = "Auto labeler encountered an error"
                 core.error(auto_labeler_error)
                 errors.push(auto_labeler_error)
