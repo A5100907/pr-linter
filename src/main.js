@@ -135,7 +135,7 @@ async function autoLabeler(octokit) {
         return true
     }
     catch(e) {
-        core.error(e.message)
+        core.error(e)
         return false
     }
 }
@@ -173,8 +173,8 @@ async function addLabels(octokit, prj_labels) {
         })
     }
     catch(e) { 
-        core.error(e.message)
-        throw new Error(e.message)
+        core.error(e)
+        throw new Error(e)
     }
 }
 
@@ -189,8 +189,8 @@ async function getIssueLabels(octokit) {
     return response.data
     }
     catch(e) { 
-        core.error(e.message)
-        throw new Error(e.message)
+        core.error(e)
+        throw new Error(e)
     }
 }
 
