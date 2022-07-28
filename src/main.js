@@ -21,49 +21,35 @@ async function main() {
         logMinimizer("github.context.payload.pull_request.title", github.context.payload.pull_request.title)
         logSeparator()
 
+        let errors = new Array()
+
         // validate PR and throw an error if it fails
         if (!isPrTitleValid(regex_patterns, pr_title)) {
-            logSeparator()
-            core.error("PR Title did not pass regex validation.")
-            throw new Error("Pull Request did not pass naming rules policy!")
+            let pr_error = "PR Title did not pass regex validation."
+            core.error(pr_error)
+            errors.push(pr_error)
         }
+
         logSeparator()
 
         // Feature: auto-labeler
-        if (enable_labeler) {
-            core.info("PR auto-label is enabled for the repo ...")
-            // get values for labeler execution
-            const pr_head = github.context.payload.pull_request.head.ref
-            const prj_label = getProjectLabel(pr_head)
-
-            if (prj_label) {
-                // run labeler
-                const pr_labels_obj = await getIssueLabels(octokit)
-                // convert full label data into a simple array of label names
-                const pr_labels = pr_labels_obj.map(function (item) { return item.name}) 
-                logMinimizer("Current PR Labels", pr_labels)
-                
-                // check if pr already has expected label
-                if (pr_labels.indexOf(prj_label) > -1) {
-                    console.log(`PR already has the label '${prj_label}' attached.`)
-                }
-                else { 
-                    // add the label to the PR
-                    const new_labels = new Array(prj_label)
-                    await addLabels(octokit, new_labels)
-                }
-
+        if (enable_labeler) { 
+            if (!autoLabeler()) {
+                let auto_labeler_error = "Auto labeler encountered an error"
+                core.error(auto_labeler_error)
+                errors.push(auto_labeler_error)
             }
-            else { core.info("Skipping auto-labeler.") }
         }
-        else { core.info("PR auto-label is disabled for the repo, skipping.") }
+        else { core.warning("PR auto-label is disabled for the repo, skipping.") }
+
+        if (errors) { throw new Error("Workflow encountered errors, see logs for details!") }
 
         // end of the main block
         logSeparator()
         core.info("Exiting gracefully.")
         return
     } 
-    catch (error) { core.setFailed(`Action failed. ${error}`) }
+    catch (error) { core.setFailed(`Workflow execution . ${errors}`) }
 }
 
 
@@ -116,10 +102,43 @@ function isPrTitleValid(regexes, pr_title) {
     }
 }
 
+function autoLabeler() {
+    // execute Auto-labeler
+    // return false if encountered an error, otherwise - true
+    try {
+        core.info("PR auto-label is enabled for the repo ...")
+        // get values for labeler execution
+        let pr_head = github.context.payload.pull_request.head.ref
+        let prj_label = getProjectLabel(pr_head)
+        
+        if (prj_label) {
+            // run labeler
+            let pr_labels_obj = await getIssueLabels(octokit)
+            // convert full label data into a simple array of label names
+            let pr_labels = pr_labels_obj.map(function (item) { return item.name}) 
+            logMinimizer("Labels currently attached to the PR", pr_labels)
+            
+            // check if pr already has expected label
+            if (pr_labels.indexOf(prj_label) > -1) { console.log(`PR already has the label '${prj_label}' attached.`) }
+            else { 
+                // add the label to the PR
+                let new_labels = new Array(prj_label)
+                await addLabels(octokit, new_labels)
+            }
+        }
+        else { core.info("Skipping auto-labeler.") }
+        return true
+    }
+    catch(e) {
+        core.error(e)
+        return false
+    }
+}
+
 function getProjectLabel(head) {
     // Return project label value if meets conditions; null otherwise
     core.info(`PR head: ${head}`)
-    var items = new Array()
+    let items = new Array()
     items = head.split('/')
     // operates on assumption that:
     // 1 - if split produces 3 items; then 1st element is a project label
@@ -134,40 +153,28 @@ function getProjectLabel(head) {
 
 async function addLabels(octokit, prj_labels) {
     // add specified label to current PR
-    try {
-        core.info("Adding a label(s) to the PR ...")
-        core.info(`owner: ${github.context.repo.owner}`)
-        core.info(`repo: ${github.context.repo.repo}`)
-        core.info(`issue_number: ${github.context.payload.pull_request.number}`)
-        logMinimizer("label(s) to add", prj_labels)
-        await octokit.rest.issues.addLabels({
-            owner: github.context.repo.owner,
-            repo: github.context.repo.repo,
-            issue_number: github.context.payload.pull_request.number,
-            labels: prj_labels,
-        })
-    }
-    catch (e) {
-        core.error(e)
-        core.setFailed(e.message)
-    }
+    core.info("Adding a label(s) to the PR ...")
+    core.info(`owner: ${github.context.repo.owner}`)
+    core.info(`repo: ${github.context.repo.repo}`)
+    core.info(`issue_number: ${github.context.payload.pull_request.number}`)
+    logMinimizer("label(s) to add", prj_labels)
+
+    await octokit.rest.issues.addLabels({
+        owner: github.context.repo.owner,
+        repo: github.context.repo.repo,
+        issue_number: github.context.payload.pull_request.number,
+        labels: prj_labels,
+    })
 }
 
 async function getIssueLabels(octokit) {
     // return list of label objects of all labels on current PR
-    try {
-        const response = await octokit.rest.issues.listLabelsOnIssue({
-            owner: github.context.repo.owner,
-            repo: github.context.repo.repo,
-            issue_number: github.context.payload.pull_request.number,
-        })
-
-        return response.data
-    }
-    catch (e) {
-        core.error(e)
-        core.setFailed(e.message)
-    }
+    const response = await octokit.rest.issues.listLabelsOnIssue({
+        owner: github.context.repo.owner,
+        repo: github.context.repo.repo,
+        issue_number: github.context.payload.pull_request.number,
+    })
+    return response.data
 }
 
 main()
