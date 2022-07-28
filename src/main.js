@@ -21,13 +21,13 @@ async function main() {
         logMinimizer("github.context.payload.pull_request.title", github.context.payload.pull_request.title)
         logSeparator()
 
-        let errors = new Array()
+        var exec_errors = new Array()
 
         // validate PR and throw an error if it fails
         if (!isPrTitleValid(regex_patterns, pr_title)) {
             let pr_error = "PR Title did not pass regex validation."
             core.error(pr_error)
-            errors.push(pr_error)
+            exec_errors.push(pr_error)
         }
 
         logSeparator()
@@ -39,20 +39,20 @@ async function main() {
                 function(error) {
                     let auto_labeler_error = "Auto labeler encountered an error"
                     core.error(auto_labeler_error)
-                    errors.push(auto_labeler_error)
+                    exec_errors.push(auto_labeler_error)
                 }
             )
         }
         else { core.warning("PR auto-label is disabled for the repo, skipping.") }
 
-        if (errors) { throw new Error("Workflow encountered errors, see logs for details!") }
+        if (exec_errors) { throw new Error("Workflow encountered errors, see logs for details!") }
 
         // end of the main block
         logSeparator()
         core.info("Exiting gracefully.")
         return
     } 
-    catch (error) { core.setFailed(`Workflow execution . ${errors}`) }
+    catch (error) { core.setFailed(`Workflow execution . ${exec_errors}`) }
 }
 
 
