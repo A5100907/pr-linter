@@ -34,7 +34,7 @@ async function main() {
 
         // Feature: auto-labeler
         if (enable_labeler) { 
-            if (!await autoLabeler()) {
+            if (!autoLabeler()) {
                 let auto_labeler_error = "Auto labeler encountered an error"
                 core.error(auto_labeler_error)
                 errors.push(auto_labeler_error)
@@ -113,7 +113,7 @@ function autoLabeler() {
         
         if (prj_label) {
             // run labeler
-            let pr_labels_obj = await getIssueLabels(octokit)
+            const pr_labels_obj = await getIssueLabels(octokit)
             // convert full label data into a simple array of label names
             let pr_labels = pr_labels_obj.map(function (item) { return item.name}) 
             logMinimizer("Labels currently attached to the PR", pr_labels)
