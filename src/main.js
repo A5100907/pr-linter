@@ -5,12 +5,11 @@ const github = require("@actions/github")
 async function main() {
     // main
 
-    // set constant values
+    // set execution values
     const regex_patterns = core.getInput("title_regex").split(";")
     const enable_labeler = (core.getInput("enable_labeler") === "true")
     const gh_token = core.getInput("github_token")
     const octokit = github.getOctokit(gh_token)
-    
     const pr_title = github.context.payload.pull_request.title
     
     try {
@@ -173,7 +172,7 @@ async function addLabels(octokit, prj_labels) {
             labels: prj_labels,
         })
     }
-    catch(e) { throw new Error(e)}
+    catch(e) { throw new Error(e) }
 }
 
 async function getIssueLabels(octokit) {
@@ -186,7 +185,7 @@ async function getIssueLabels(octokit) {
         })
         return response.data
     }
-    catch(e) { throw new Error(e)}
+    catch(e) { throw new Error(e) }
 }
 
 main()
