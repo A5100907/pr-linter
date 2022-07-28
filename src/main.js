@@ -47,14 +47,18 @@ async function main() {
         }
         else { core.warning("PR auto-label is disabled for the repo, skipping.") }
 
-        if (exec_errors) { throw new Error("Workflow encountered errors, see logs for details!") }
+        if (exec_errors) {
+            core.error("Workflow encountered errors, see logs for details!")
+            core.error(exec_errors)
+            throw new Error("Workflow encountered errors, see logs for details!")
+        }
 
         // end of the main block
         logSeparator()
         core.info("Exiting gracefully.")
         return
     } 
-    catch (error) { core.setFailed(`Workflow execution failed ${exec_errors}`) }
+    catch (error) { core.setFailed("Workflow execution failed") }
 }
 
 
@@ -176,7 +180,10 @@ async function addLabels(octokit, prj_labels) {
         })
         core.info("DEBUG 55")
     }
-    catch(e) { core.error(e) }
+    catch(e) { 
+        core.error(e)
+        throw new Error(e.message)
+    }
 }
 
 async function getIssueLabels(octokit) {
@@ -190,7 +197,10 @@ async function getIssueLabels(octokit) {
     core.info("DEBUG 66")
     return response.data
     }
-    catch(e) { core.error(e) }
+    catch(e) { 
+        core.error(e)
+        throw new Error(e.message)
+    }
 }
 
 main()
