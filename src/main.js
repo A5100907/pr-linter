@@ -160,20 +160,23 @@ function getProjectLabel(head) {
 }
 
 async function addLabels(octokit, prj_labels) {
-    // add specified label to current PR
-    core.info("Adding a label(s) to the PR ...")
-    core.info(`owner: ${github.context.repo.owner}`)
-    core.info(`repo: ${github.context.repo.repo}`)
-    core.info(`issue_number: ${github.context.payload.pull_request.number}`)
-    logMinimizer("label(s) to add", prj_labels)
-
-    await octokit.rest.issues.addLabels({
-        owner: github.context.repo.owner,
-        repo: github.context.repo.repo,
-        issue_number: github.context.payload.pull_request.number,
-        labels: prj_labels,
-    })
-    core.info("DEBUG 55")
+    try {
+        // add specified label to current PR
+        core.info("Adding a label(s) to the PR ...")
+        core.info(`owner: ${github.context.repo.owner}`)
+        core.info(`repo: ${github.context.repo.repo}`)
+        core.info(`issue_number: ${github.context.payload.pull_request.number}`)
+        logMinimizer("label(s) to add", prj_labels)
+        
+        await octokit.rest.issues.addLabels({
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
+            issue_number: github.context.payload.pull_request.number,
+            labels: prj_labels,
+        })
+        core.info("DEBUG 55")
+    }
+    catch(e) { core.error(e) }
 }
 
 async function getIssueLabels(octokit) {
