@@ -47,7 +47,7 @@ async function main() {
         }
         else { core.warning("PR auto-label is disabled for the repo, skipping.") }
 
-        if (exec_errors) {
+        if (exec_errors.length) {
             core.error("Workflow encountered errors, see logs for details!")
             core.error(exec_errors)
             throw new Error("Workflow encountered errors, see logs for details!")
