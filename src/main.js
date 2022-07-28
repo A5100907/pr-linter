@@ -34,7 +34,7 @@ async function main() {
 
         // Feature: auto-labeler
         if (enable_labeler) { 
-            autoLabeler().then(
+            autoLabeler(octokit).then(
                 function(value) {},
                 function(error) {
                     let auto_labeler_error = "Auto labeler encountered an error"
@@ -105,7 +105,7 @@ function isPrTitleValid(regexes, pr_title) {
     }
 }
 
-async function autoLabeler() {
+async function autoLabeler(octokit) {
     // execute Auto-labeler
     // return false if encountered an error, otherwise - true
     try {
