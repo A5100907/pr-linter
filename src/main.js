@@ -34,10 +34,8 @@ async function main() {
 
         // Feature: auto-labeler
         if (enable_labeler) {
-            core.info("DEBUG 1")
             const result = await autoLabeler(octokit)
             if (!result) {
-                core.info("DEBUG 11")
                 let auto_labeler_error = "Auto labeler encountered an error"
                 core.error(auto_labeler_error)
                 exec_errors.push(auto_labeler_error)
@@ -120,9 +118,7 @@ async function autoLabeler(octokit) {
         
         if (prj_label) {
             // run labeler
-            core.info("DEBUG 3")
             const pr_labels_obj = await getIssueLabels(octokit)
-            core.info("DEBUG 4")
             // convert full label data into a simple array of label names
             let pr_labels = pr_labels_obj.map(function (item) { return item.name}) 
             logMinimizer("Labels currently attached to the PR", pr_labels)
@@ -132,7 +128,6 @@ async function autoLabeler(octokit) {
             else { 
                 // add the label to the PR
                 let new_labels = new Array(prj_label)
-                core.info("DEBUG 5")
                 await addLabels(octokit, new_labels)
             }
         }
@@ -140,7 +135,7 @@ async function autoLabeler(octokit) {
         return true
     }
     catch(e) {
-        core.error(e)
+        core.error(e.message)
         return false
     }
 }
@@ -176,10 +171,9 @@ async function addLabels(octokit, prj_labels) {
             issue_number: github.context.payload.pull_request.number,
             labels: prj_labels,
         })
-        core.info("DEBUG 55")
     }
     catch(e) { 
-        core.error(e)
+        core.error(e.message)
         throw new Error(e.message)
     }
 }
@@ -192,11 +186,10 @@ async function getIssueLabels(octokit) {
         repo: github.context.repo.repo,
         issue_number: github.context.payload.pull_request.number,
     })
-    core.info("DEBUG 66")
     return response.data
     }
     catch(e) { 
-        core.error(e)
+        core.error(e.message)
         throw new Error(e.message)
     }
 }
