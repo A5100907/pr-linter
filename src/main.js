@@ -35,15 +35,13 @@ async function main() {
         // Feature: auto-labeler
         if (enable_labeler) {
             core.info("DEBUG 1")
-            autoLabeler(octokit).then(
-                function(value) {},
-                function(error) {
-                    core.info("DEBUG 11")
-                    let auto_labeler_error = "Auto labeler encountered an error"
-                    core.error(auto_labeler_error)
-                    exec_errors.push(auto_labeler_error)
-                }
-            )
+            const result = await autoLabeler(octokit)
+            if (!result) {
+                core.info("DEBUG 11")
+                let auto_labeler_error = "Auto labeler encountered an error"
+                core.error(auto_labeler_error)
+                exec_errors.push(auto_labeler_error)
+            }
         }
         else { core.warning("PR auto-label is disabled for the repo, skipping.") }
 
