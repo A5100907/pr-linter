@@ -1,6 +1,3 @@
-// TODO cleanup form debug prints
-// TODO check if label exists in the repo and if not - create it with unique color and description, then attach to the project
-// string to hex color https://stackoverflow.com/a/66494926
 // import necessary modules
 const core = require("@actions/core")
 const github = require("@actions/github")
@@ -17,15 +14,16 @@ async function main() {
     const pr_title = github.context.payload.pull_request.title
     
     try {
-        // print out available data from github
+        // print out relevant available data from received from a github
         logSeparator()
         logMinimizer("github.context", github.context)
         logMinimizer("github.context.payload.pull_request.title", github.context.payload.pull_request.title)
         logSeparator()
 
+        // contains encountered errors during execution
         var exec_errors = new Array()
 
-        // validate PR and throw an error if it fails
+        // validate Pull Request title
         if (!isPrTitleValid(regex_patterns, pr_title)) {
             let pr_error = "PR Title did not pass regex validation."
             core.error(pr_error)
@@ -45,6 +43,7 @@ async function main() {
         }
         else { core.warning("PR auto-label is disabled for the repo, skipping.") }
 
+        // check if execution encountered errors
         if (exec_errors.length) { throw new Error("Workflow encountered errors, see logs for details!") }
 
         // end of the main block
@@ -55,9 +54,8 @@ async function main() {
     catch (error) { core.setFailed(error) }
 }
 
-
 function logMinimizer(title, text_to_print) {
-    // prints into a log with ability to maximize/minimize entry
+    // prints into a github's log with ability to collapse an entry
     core.startGroup(title)
     console.log(text_to_print)
     core.endGroup()
@@ -71,14 +69,16 @@ function logSeparator() {
 function isPrTitleValid(regexes, pr_title) {
     // Validates a PR title against a list of regex patterns
     // Need to match at least one pattern for it to be valid
-    // Returns false if not valid, true if valid
+    // Returns true if valid
+    // Returns false if not valid or run into an execution error
     let pr_title_is_valid = false
     try {
         // loop over every defined matching pattern
         regexes.forEach(pattern => {
             core.info(`Validating '${pr_title}' against '${pattern}'`)
+            
+            // validate against current regex pattern
             const regex = RegExp(pattern)
-
             if (regex.test(pr_title)) {
                 core.info("Match.")
                 pr_title_is_valid = true
@@ -93,6 +93,7 @@ function isPrTitleValid(regexes, pr_title) {
             return true
         }
 
+        // code hit this block if it did not match against any defined regex patterns
         core.warning("PR Title did not match against any of the allowed regex patterns.")
         core.warning("Please refer to the PR Title naming policy for your project.")
         return false
@@ -101,7 +102,7 @@ function isPrTitleValid(regexes, pr_title) {
         core.error(error)
         core.error("Something went wrong in regex pattern validation!")
         core.error("Contact Fusion DevOps team <fusion_devops@johnsoncontrols365.onmicrosoft.com>")
-        throw new Error("isPrTitleValid() failed.")
+        return false
     }
 }
 
@@ -134,6 +135,8 @@ async function autoLabeler(octokit) {
     }
     catch(e) {
         core.error(e)
+        core.error("Something went wrong in auto-labeler!")
+        core.error("Contact Fusion DevOps team <fusion_devops@johnsoncontrols365.onmicrosoft.com>")
         return false
     }
 }
@@ -158,8 +161,8 @@ async function addLabels(octokit, prj_labels) {
     try {
         // add specified label to current PR
         core.info("Adding a label(s) to the PR ...")
-        core.info(`owner: ${github.context.repo.owner}`)
-        core.info(`repo: ${github.context.repo.repo}`)
+        core.info(`repos owner: ${github.context.repo.owner}`)
+        core.info(`repos name: ${github.context.repo.repo}`)
         core.info(`issue_number: ${github.context.payload.pull_request.number}`)
         logMinimizer("label(s) to add", prj_labels)
         
