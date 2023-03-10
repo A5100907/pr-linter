@@ -20,10 +20,10 @@ jobs:
         # TODO remove DEBUG prints
         run: |
           echo "The branch name is ${GITHUB_REF##*/}"
-          echo "branch=${GITHUB_REF##*/}" >> $GITHUB_ENV
-          echo "DEBUG"
-          echo "${{ env.branch }}"
-          extract_branch
+          echo "The branch name is ${GITHUB_REF#refs/heads/}"
+        # echo "branch=${GITHUB_REF##*/}" >> $GITHUB_ENV
+        # echo "DEBUG"
+        # echo "${{ env.branch }}"
       - name: "Get the source"
         uses: actions/checkout@v3.3.0
         with:
