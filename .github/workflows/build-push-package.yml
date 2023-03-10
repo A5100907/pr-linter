@@ -16,17 +16,16 @@ jobs:
     steps:
       - name: "Extract branch name"
         shell: bash
-        # run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        # TODO remove DEBUG prints
         run: |
           echo "The branch name is ${GITHUB_REF#refs/heads/}"
-          echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-          echo "${{ env.branch }}"
+          echo "branch_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
       - name: "Get the source"
         uses: actions/checkout@v3.3.0
         with:
           persist-credentials: false
           fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
+      - name: Test ENV
+        run: echo "Branch name from ENV = ${{ env.branch_name }}"
       - name: "Get node dependencies"
         run: npm ci
         # make sure that .gitignore has 'node_modules' in it, otherwise all modules will be committed along the built index.js
@@ -36,4 +35,4 @@ jobs:
         uses: actions-js/push@v1.4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ env.branch }}
+          branch: ${{ env.branch_name }}
