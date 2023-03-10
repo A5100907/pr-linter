@@ -19,7 +19,8 @@ jobs:
         # run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         # TODO remove DEBUG prints
         run: |
-          echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+          echo "The branch name is ${GITHUB_REF##*/}"
+          echo "branch=${GITHUB_REF##*/}" >> $GITHUB_ENV
           echo "DEBUG"
           echo "${{ env.branch }}"
           extract_branch
