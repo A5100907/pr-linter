@@ -19,11 +19,9 @@ jobs:
         # run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         # TODO remove DEBUG prints
         run: |
-          echo "The branch name is ${GITHUB_REF##*/}"
           echo "The branch name is ${GITHUB_REF#refs/heads/}"
-        # echo "branch=${GITHUB_REF##*/}" >> $GITHUB_ENV
-        # echo "DEBUG"
-        # echo "${{ env.branch }}"
+          echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+          echo "${{ env.branch }}"
       - name: "Get the source"
         uses: actions/checkout@v3.3.0
         with:
