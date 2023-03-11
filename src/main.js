@@ -57,21 +57,22 @@ async function main() {
 }
 
 async function getChangedFiles(context, octokit) {
-  
+    core.info('D1')
     const owner = context.payload.repository.owner.login;
     const repo = context.payload.repository.name;
     const pr_number = context.payload.pull_request.number;
-  
+    core.info('D2')
     const response = await octokit.pulls.listFiles({
       owner,
       repo,
       pull_number: pr_number,
     });
+    core.info('D3')
     // TODO remove Debug prints after testing
     logMinimizer("listFiles response", response)
     // console.log(typeof response)
     // const changed_files = files.map((file) => file.filename);
-  
+    core.info('D4')
     return changed_files;
   }
 
