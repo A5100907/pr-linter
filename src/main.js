@@ -18,10 +18,10 @@ async function main() {
         logMinimizer("github.context", github.context)
         logMinimizer("github.context.payload.pull_request.title", github.context.payload.pull_request.title)
         // TODO remove debug prints after testing
-        logMinimizer("github.context._links", github.context._links)
-        logMinimizer("github.context.base", github.context.base)
-        logMinimizer("github.context.head", github.context.head)
-        logMinimizer("github.context.user", github.context.user)
+        logMinimizer("github.context._links", github.context.payload.pull_request._links)
+        logMinimizer("github.context.base", github.context.payload.pull_request.base)
+        logMinimizer("github.context.head", github.context.payload.pull_request.head)
+        logMinimizer("github.context.user", github.context.payload.pull_request.user)
         logSeparator()
 
         // contains encountered errors during execution
