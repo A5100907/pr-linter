@@ -61,8 +61,13 @@ async function getChangedFiles(context, octokit) {
     const owner = context.payload.repository.owner.login;
     const repo = context.payload.repository.name;
     const pr_number = context.payload.pull_request.number;
-    core.info('D2')
-    const response = await octokit.pulls.listFiles({
+    // TODO remove Debug prints after testing
+    core.info('owner: ' + owner)
+    core.info('repo: ' + repo)
+    core.info('pr_number: ' + pr_number)
+    core.info('octokit: ' + octokit)
+    
+    await octokit.pulls.listFiles({
       owner,
       repo,
       pull_number: pr_number,
