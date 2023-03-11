@@ -19,7 +19,7 @@ async function main() {
         logMinimizer("github.context.payload.pull_request.title", github.context.payload.pull_request.title)
         // TODO remove debug prints after testing
         const changed_files = await getChangedFiles(github.context, octokit)
-        // logMinimizer("Changed files", changed_files)
+        logMinimizer("Changed files", changed_files)
         logSeparator()
 
         // contains encountered errors during execution
@@ -57,26 +57,18 @@ async function main() {
 }
 
 async function getChangedFiles(context, octokit) {
-    core.info('D1')
+    // get a list of changed files in a PR
     const owner = context.payload.repository.owner.login;
     const repo = context.payload.repository.name;
     const pr_number = context.payload.pull_request.number;
-    // TODO remove Debug prints after testing
-    core.info('owner: ' + owner)
-    core.info('repo: ' + repo)
-    core.info('pr_number: ' + pr_number)
     
-    const response = await octokit.rest.pulls.listFiles({
+    const { data: files } = await octokit.rest.pulls.listFiles({
       owner,
       repo,
       pull_number: pr_number,
     });
-    core.info('D3')
-    // TODO remove Debug prints after testing
-    logMinimizer("listFiles response", response)
-    // console.log(typeof response)
-    // const changed_files = files.map((file) => file.filename);
-    core.info('D4')
+    
+    const changed_files = files.map((file) => file.filename);
     return changed_files;
   }
 
