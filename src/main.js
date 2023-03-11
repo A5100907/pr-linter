@@ -18,10 +18,8 @@ async function main() {
         logMinimizer("github.context", github.context)
         logMinimizer("github.context.payload.pull_request.title", github.context.payload.pull_request.title)
         // TODO remove debug prints after testing
-        logMinimizer("github.context._links", github.context.payload.pull_request._links)
-        logMinimizer("github.context.base", github.context.payload.pull_request.base)
-        logMinimizer("github.context.head", github.context.payload.pull_request.head)
-        logMinimizer("github.context.user", github.context.payload.pull_request.user)
+        const changed_files = await getChangedFiles(github.context, octokit)
+        logMinimizer("Changed files", changed_files)
         logSeparator()
 
         // contains encountered errors during execution
@@ -57,6 +55,23 @@ async function main() {
     } 
     catch (error) { core.setFailed(error) }
 }
+
+async function getChangedFiles(context, octokit) {
+  
+    const owner = context.payload.repository.owner.login;
+    const repo = context.payload.repository.name;
+    const pr_number = context.payload.pull_request.number;
+  
+    const { data: files } = await octokit.pulls.listFiles({
+      owner,
+      repo,
+      pull_number: pr_number,
+    });
+  
+    const changed_files = files.map((file) => file.filename);
+  
+    return changed_files;
+  }
 
 function logMinimizer(title, text_to_print) {
     // prints into a github's log with ability to collapse an entry
