@@ -1,13 +1,13 @@
 // import necessary modules
 const core = require("@actions/core")
 const github = require("@actions/github")
+import * as FileCheckerModule from "./is_file_binary.mjs"
 
 async function main() {
     // main
 
     // set execution values
     const regex_patterns = core.getInput("title_regex").split(";")
-    const enable_labeler = (core.getInput("enable_labeler") === "true")
     const gh_token = core.getInput("github_token")
     const octokit = github.getOctokit(gh_token)
     const pr_title = github.context.payload.pull_request.title
@@ -17,9 +17,6 @@ async function main() {
         logSeparator()
         logMinimizer("github.context", github.context)
         logMinimizer("github.context.payload.pull_request.title", github.context.payload.pull_request.title)
-        // TODO remove debug prints after testing
-        const changed_files = await getChangedFiles(github.context, octokit)
-        logMinimizer("Changed files", changed_files)
         logSeparator()
 
         // contains encountered errors during execution
@@ -35,7 +32,7 @@ async function main() {
         logSeparator()
 
         // Feature: auto-labeler
-        if (enable_labeler) {
+        if (core.getInput("enable_labeler") === "true") {
             const result = await autoLabeler(octokit)
             if (!result) {
                 let auto_labeler_error = "Auto labeler encountered an error"
@@ -44,6 +41,13 @@ async function main() {
             }
         }
         else { core.warning("PR auto-label is disabled for the repo, skipping.") }
+
+        // Feature: file checker
+        if(core.getInput("enable_file_checker") === "true") {
+            const changed_files = await FileCheckerModule.getChangedFiles(github.context, octokit)
+            logMinimizer("Changed Files", changed_files)
+
+        }
 
         // check if execution encountered errors
         if (exec_errors.length) { throw new Error("Workflow encountered errors, see logs for details!") }
@@ -55,22 +59,6 @@ async function main() {
     } 
     catch (error) { core.setFailed(error) }
 }
-
-async function getChangedFiles(context, octokit) {
-    // get a list of changed files in a PR
-    const owner = context.payload.repository.owner.login;
-    const repo = context.payload.repository.name;
-    const pr_number = context.payload.pull_request.number;
-    
-    const { data: files } = await octokit.rest.pulls.listFiles({
-      owner,
-      repo,
-      pull_number: pr_number,
-    });
-    
-    const changed_files = files.map((file) => file.filename);
-    return changed_files;
-  }
 
 function logMinimizer(title, text_to_print) {
     // prints into a github's log with ability to collapse an entry

@@ -1,3 +1,19 @@
+async function getChangedFiles(context, octokit) {
+  // get a list of changed files in a PR
+  const owner = context.payload.repository.owner.login;
+  const repo = context.payload.repository.name;
+  const pr_number = context.payload.pull_request.number;
+  
+  const { data: files } = await octokit.rest.pulls.listFiles({
+    owner,
+    repo,
+    pull_number: pr_number,
+  });
+  
+  const changed_files = files.map((file) => file.filename);
+  return changed_files;
+}
+
 function checkIfFileContainsText(filePath) {
   try {
     const { execSync } = require('child_process');
@@ -14,6 +30,8 @@ function checkIfFileContainsText(filePath) {
   
   return false;
 }
+
+export { checkIfFileContainsText, getChangedFiles }
 
 // // Example usage
 // const filePathList = ['/path/to/file1.txt', '/path/to/file2.jpg', '/path/to/file3.csv'];
