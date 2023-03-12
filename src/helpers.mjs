@@ -1,3 +1,5 @@
+const core = require("@actions/core")
+
 function logMinimizer(title, text_to_print) {
     // prints into a github's log with ability to collapse an entry
     core.startGroup(title)
