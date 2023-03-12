@@ -1,8 +1,9 @@
 // import necessary modules
-const core = require("@actions/core")
-const github = require("@actions/github")
 import * as FileCheckerModule from "./is_file_binary.mjs"
 import * as AutoLabelerModule from "./auto_labeler.mjs"
+
+const core = require("@actions/core")
+const github = require("@actions/github")
 
 async function main() {
     // main
@@ -34,7 +35,7 @@ async function main() {
 
         // Feature: auto-labeler
         if (core.getInput("enable_labeler") === "true") {
-            const result = await AutoLabelerModule.autoLabeler(octokit)
+            const result = await AutoLabelerModule.autoLabeler(core, github, octokit)
             if (!result) {
                 let auto_labeler_error = "Auto labeler encountered an error"
                 core.error(auto_labeler_error)

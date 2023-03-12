@@ -1,18 +1,15 @@
-const core = require("@actions/core")
-const github = require("@actions/github")
-
-async function autoLabeler(octokit) {
+async function autoLabeler(core, github, octokit) {
     // execute Auto-labeler
     // return false if encountered an error, otherwise - true
     try {
         core.info("PR auto-label is enabled for the repo ...")
         // get values for labeler execution
         let pr_head = github.context.payload.pull_request.head.ref
-        let prj_label = getProjectLabel(pr_head)
+        let prj_label = getProjectLabel(core, pr_head)
         
         if (prj_label) {
             // run labeler
-            const pr_labels_obj = await getIssueLabels(octokit)
+            const pr_labels_obj = await getIssueLabels(github, octokit)
             // convert full label data into a simple array of label names
             let pr_labels = pr_labels_obj.map(function (item) { return item.name}) 
             logMinimizer("Labels currently attached to the PR", pr_labels)
@@ -22,7 +19,7 @@ async function autoLabeler(octokit) {
             else { 
                 // add the label to the PR
                 let new_labels = new Array(prj_label)
-                await addLabels(octokit, new_labels)
+                await addLabels(core, github, octokit, new_labels)
             }
         }
         else { core.info("Skipping auto-labeler.") }
@@ -36,7 +33,7 @@ async function autoLabeler(octokit) {
     }
 }
 
-function getProjectLabel(head) {
+function getProjectLabel(core, head) {
     // Return project label value if meets conditions; null otherwise
     core.info(`PR head: ${head}`)
     let items = new Array()
@@ -52,7 +49,7 @@ function getProjectLabel(head) {
     return null
 }
 
-async function addLabels(octokit, prj_labels) {
+async function addLabels(core, github, octokit, prj_labels) {
     try {
         // add specified label to current PR
         core.info("Adding a label(s) to the PR ...")
@@ -71,7 +68,7 @@ async function addLabels(octokit, prj_labels) {
     catch(e) { throw new Error(e) }
 }
 
-async function getIssueLabels(octokit) {
+async function getIssueLabels(github, octokit) {
     try {
         // return list of label objects of all labels on current PR
         const response = await octokit.rest.issues.listLabelsOnIssue({
