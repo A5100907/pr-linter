@@ -1,6 +1,7 @@
 // import necessary modules
 import * as FileCheckerModule from "./is_file_binary.mjs"
 import * as AutoLabelerModule from "./auto_labeler.mjs"
+import { logMinimizer, logSeparator } from "./helpers.mjs"
 
 const core = require("@actions/core")
 const github = require("@actions/github")
@@ -63,18 +64,6 @@ async function main() {
         return
     } 
     catch (error) { core.setFailed(error) }
-}
-
-function logMinimizer(title, text_to_print) {
-    // prints into a github's log with ability to collapse an entry
-    core.startGroup(title)
-    console.log(text_to_print)
-    core.endGroup()
-}
-
-function logSeparator() {
-    // print out a visual separator into a log
-    core.info("=".repeat(80))
 }
 
 function isPrTitleValid(regexes, pr_title) {

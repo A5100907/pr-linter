@@ -1,3 +1,5 @@
+import { logMinimizer } from "./helpers.mjs"
+
 async function getChangedFiles(context, octokit) {
   // get a list of changed files in a PR
   const owner = context.payload.repository.owner.login;

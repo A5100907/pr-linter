@@ -1,3 +1,5 @@
+import { logMinimizer } from "./helpers.mjs"
+
 async function autoLabeler(core, github, octokit) {
     // execute Auto-labeler
     // return false if encountered an error, otherwise - true
