@@ -4,7 +4,6 @@ async function autoLabeler(core, github, octokit) {
     // execute Auto-labeler
     // return false if encountered an error, otherwise - true
     try {
-        core.info("PR auto-label is enabled for the repo ...")
         // get values for labeler execution
         let pr_head = github.context.payload.pull_request.head.ref
         let prj_label = getProjectLabel(core, pr_head)
