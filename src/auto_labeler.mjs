@@ -1,3 +1,6 @@
+const core = require("@actions/core")
+const github = require("@actions/github")
+
 async function autoLabeler(octokit) {
     // execute Auto-labeler
     // return false if encountered an error, otherwise - true
