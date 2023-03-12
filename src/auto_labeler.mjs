@@ -14,7 +14,7 @@ async function autoLabeler(core, github, octokit) {
             const pr_labels_obj = await getIssueLabels(github, octokit)
             // convert full label data into a simple array of label names
             let pr_labels = pr_labels_obj.map(function (item) { return item.name}) 
-            logMinimizer("Labels currently attached to the PR", pr_labels)
+            logMinimizer(core, "Labels currently attached to the PR", pr_labels)
             
             // check if pr already has expected label
             if (pr_labels.indexOf(prj_label) > -1) { console.log(`PR already has the label '${prj_label}' attached.`) }
@@ -58,7 +58,7 @@ async function addLabels(core, github, octokit, prj_labels) {
         core.info(`repos owner: ${github.context.repo.owner}`)
         core.info(`repos name: ${github.context.repo.repo}`)
         core.info(`issue_number: ${github.context.payload.pull_request.number}`)
-        logMinimizer("label(s) to add", prj_labels)
+        logMinimizer(core, "label(s) to add", prj_labels)
         
         await octokit.rest.issues.addLabels({
             owner: github.context.repo.owner,

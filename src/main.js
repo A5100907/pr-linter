@@ -17,10 +17,10 @@ async function main() {
     
     try {
         // print out relevant available data from received from a github
-        logSeparator()
-        logMinimizer("github.context", github.context)
-        logMinimizer("github.context.payload.pull_request.title", github.context.payload.pull_request.title)
-        logSeparator()
+        logSeparator(core)
+        logMinimizer(core, "github.context", github.context)
+        logMinimizer(core, "github.context.payload.pull_request.title", github.context.payload.pull_request.title)
+        logSeparator(core)
 
         // contains encountered errors during execution
         var exec_errors = new Array()
@@ -32,7 +32,7 @@ async function main() {
             exec_errors.push(pr_error)
         }
 
-        logSeparator()
+        logSeparator(core)
 
         // Feature: auto-labeler
         if (core.getInput("enable_labeler") === "true") {
@@ -45,12 +45,12 @@ async function main() {
         }
         else { core.warning("PR auto-label is disabled for the repo, skipping.") }
 
-        logSeparator()
+        logSeparator(core)
 
         // Feature: file checker
         if(core.getInput("enable_file_checker") === "true") {
             const changed_files = await FileCheckerModule.getChangedFiles(github.context, octokit)
-            logMinimizer("Changed Files", changed_files)
+            logMinimizer(core, "Changed Files", changed_files)
 
         }
         else { core.warning("PR file-type-checker is disabled for the repo, skipping.") }
@@ -59,7 +59,7 @@ async function main() {
         if (exec_errors.length) { throw new Error("Workflow encountered errors, see logs for details!") }
 
         // end of the main block
-        logSeparator()
+        logSeparator(core)
         core.info("Exiting gracefully.")
         return
     } 
