@@ -51,7 +51,7 @@ async function main() {
         // Feature: file checker
         if(core.getInput("enable_file_checker") === "true") {
             core.info("PR file-type-checker is enabled for the repo ...")
-            const result = fileTypeChecker(core, github, octokit)
+            const result = await fileTypeChecker(core, github, octokit)
 
         }
         else { core.warning("PR file-type-checker is disabled for the repo, skipping.") }
