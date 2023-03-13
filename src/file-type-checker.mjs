@@ -1,4 +1,9 @@
 import { logMinimizer } from "./helpers.mjs"
+async function fileTypeChecker(core, github, octokit) {
+    // check if file contains text
+    const changed_files = await getChangedFiles(github.context, octokit)
+    logMinimizer(core, "Changed Files", changed_files)
+}
 
 async function getChangedFiles(context, octokit) {
   // get a list of changed files in a PR
@@ -33,7 +38,7 @@ function checkIfFileContainsText(filePath) {
   return false;
 }
 
-export { checkIfFileContainsText, getChangedFiles }
+export { fileTypeChecker }
 
 // // Example usage
 // const filePathList = ['/path/to/file1.txt', '/path/to/file2.jpg', '/path/to/file3.csv'];

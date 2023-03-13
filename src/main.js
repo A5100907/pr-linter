@@ -1,6 +1,6 @@
 // import necessary modules
-import * as FileCheckerModule from "./file-type-checker.mjs"
-import * as AutoLabelerModule from "./auto-labeler.mjs"
+import { fileTypeChecker } from "./file-type-checker.mjs"
+import { autoLabeler } from "./auto-labeler.mjs"
 import { logMinimizer, logSeparator } from "./helpers.mjs"
 
 const core = require("@actions/core")
@@ -37,7 +37,7 @@ async function main() {
         // Feature: auto-labeler
         if (core.getInput("enable_labeler") === "true") {
             core.info("PR auto-label is enabled for the repo ...")
-            const result = await AutoLabelerModule.autoLabeler(core, github, octokit)
+            const result = await autoLabeler(core, github, octokit)
             if (!result) {
                 let auto_labeler_error = "Auto labeler encountered an error"
                 core.error(auto_labeler_error)
@@ -51,8 +51,7 @@ async function main() {
         // Feature: file checker
         if(core.getInput("enable_file_checker") === "true") {
             core.info("PR file-type-checker is enabled for the repo ...")
-            const changed_files = await FileCheckerModule.getChangedFiles(github.context, octokit)
-            logMinimizer(core, "Changed Files", changed_files)
+            const result = fileTypeChecker(core, github, octokit)
 
         }
         else { core.warning("PR file-type-checker is disabled for the repo, skipping.") }

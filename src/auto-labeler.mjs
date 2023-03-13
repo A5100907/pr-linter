@@ -21,6 +21,7 @@ async function autoLabeler(core, github, octokit) {
                 // add the label to the PR
                 let new_labels = new Array(prj_label)
                 await addLabels(core, github, octokit, new_labels)
+                core.info("Done.")
             }
         }
         else { core.info("Skipping auto-labeler.") }
