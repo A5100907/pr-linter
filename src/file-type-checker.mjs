@@ -78,7 +78,8 @@ async function getFileTree(github, octokit, core) {
     repo: github.context.repo.repo,
     branch: github.context.payload.pull_request.head.ref
   })
-
+  core.info(`Branch: ${github.context.payload.pull_request.head.ref}`)
+  core.info(`SHA: ${sha}`)
   const { data: { tree } } = await octokit.rest.git.getTree({
     owner: github.context.repo.owner,
     repo: github.context.repo.repo,
