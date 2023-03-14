@@ -25,26 +25,28 @@ async function main() {
         // contains encountered errors during execution
         var exec_errors = new Array()
 
+        // TODO enable
         // validate Pull Request title
-        if (!isPrTitleValid(regex_patterns, pr_title)) {
-            let pr_error = "PR Title did not pass regex validation."
-            core.error(pr_error)
-            exec_errors.push(pr_error)
-        }
+        // if (!isPrTitleValid(regex_patterns, pr_title)) {
+        //     let pr_error = "PR Title did not pass regex validation."
+        //     core.error(pr_error)
+        //     exec_errors.push(pr_error)
+        // }
 
         logSeparator(core)
 
+        // TODO enable
         // Feature: auto-labeler
-        if (core.getInput("enable_labeler") === "true") {
-            core.info("PR auto-label is enabled for the repo ...")
-            const result = await autoLabeler(core, github, octokit)
-            if (!result) {
-                let auto_labeler_error = "Auto labeler encountered an error"
-                core.error(auto_labeler_error)
-                exec_errors.push(auto_labeler_error)
-            }
-        }
-        else { core.warning("PR auto-label is disabled for the repo, skipping.") }
+        // if (core.getInput("enable_labeler") === "true") {
+        //     core.info("PR auto-label is enabled for the repo ...")
+        //     const result = await autoLabeler(core, github, octokit)
+        //     if (!result) {
+        //         let auto_labeler_error = "Auto labeler encountered an error"
+        //         core.error(auto_labeler_error)
+        //         exec_errors.push(auto_labeler_error)
+        //     }
+        // }
+        // else { core.warning("PR auto-label is disabled for the repo, skipping.") }
 
         logSeparator(core)
 

@@ -8,7 +8,9 @@ async function fileTypeChecker(core, github, octokit, exec) {
     for (let i = 0; i < changed_files.length; i++) {
       const file_path = changed_files[i]
       core.info(`Checking file '${file_path}' ...`)
-      const file_type = getFileType(file_path, exec)
+      const file_content = await getFileContent(github, octokit, file_path)
+      core.info(`File content response: ${file_content}`)
+      // const file_type = getFileType(file_path, exec)
       // core.info(file_type)
 
       // if(!file_type) { 
@@ -71,18 +73,14 @@ async function getFileType(filePath, exec, core) {
   // return !mimeType.startsWith('text/');
 }
 
+async function getFileContent(github, octokit, path) {
+  const response = await octokit.rest.repos.getContent({
+    owner: github.context.repo.owner,
+    repo: github.context.repo.repo,
+    path: path
+  })
+  return response
+}
 
 export { fileTypeChecker }
 
-// // Example usage
-// const filePathList = ['/path/to/file1.txt', '/path/to/file2.jpg', '/path/to/file3.csv']
-// let containsText = false
-
-// for (let i = 0; i < filePathList.length; i++) {
-//   const filePath = filePathList[i]
-//   const fileContainsText = checkIfFileContainsText(filePath)
-//   if (fileContainsText) {
-//     containsText = true
-//     break
-//   }
-// }
