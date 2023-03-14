@@ -4,21 +4,20 @@ async function fileTypeChecker(core, github, octokit, exec) {
     const changed_files = await getChangedFiles(github.context, octokit)
     logMinimizer(core, "Changed Files", changed_files)
 
-    core.info("Checking if any of the changed files contain text ...")
-    for (let i = 0; i < changed_files.length; i++) {
-      // const file_path = changed_files[i]
-      const file_path = ".github/workflows/pr-linter.yml"
-      core.info(`Checking file '${file_path}' ...`)
-      const file_content = await getFileContent(github, octokit, file_path)
-      core.info(`File content response: ${file_content}`)
-      // const file_type = getFileType(file_path, exec)
-      // core.info(file_type)
+    const file_tree = await getFileTree(github, octokit, core)
+    logMinimizer(core, "File Tree", file_tree)
 
-      // if(!file_type) { 
-      //   core.warning(`Error processing '${file_path}'!`)
-      //   // TODO error handling
-      // }
-      // if (is_binary) { core.warning(`File '${file_path}' is binary!`) }
+    for (let i = 0; i < changed_files.length; i++) {
+      const file_path = changed_files[i]
+
+      core.info(`Checking file '${file_path}' ...`)
+      const file = tree.find(file => file.path === path);
+      if (!file) {
+        core.error(`File not found at path: ${path}`)
+        throw new Error(`File not found at path: ${path}`);
+      }
+
+
     }
     return true
 }
@@ -48,39 +47,45 @@ async function getChangedFiles(context, octokit) {
 //   catch (error) { return null }
 // }
 
-async function getFileType(filePath, exec, core) {
-  // // Check if file exists
-  // try {
-  //   await fs.access(filePath);
-  // } catch (err) {
-  //   throw new Error(`File "${filePath}" not found`);
-  // }
+// async function getFileType(filePath, exec, core) {
+//   // // Check if file exists
+//   // try {
+//   //   await fs.access(filePath);
+//   // } catch (err) {
+//   //   throw new Error(`File "${filePath}" not found`);
+//   // }
 
-  // Use the "file" command to determine file type
-  let output = ""
-  let error = ""
-  const options = {}
-  options.listeners = {
-    stdout: (data) => { output += data.toString() },
-    stderr: (data) => { error += data.toString() }
-  }
+//   // Use the "file" command to determine file type
+//   let output = ""
+//   let error = ""
+//   const options = {}
+//   options.listeners = {
+//     stdout: (data) => { output += data.toString() },
+//     stderr: (data) => { error += data.toString() }
+//   }
 
-  await exec.exec(`file`, ["--mime-type", "--brief", filePath], options);
+//   await exec.exec(`file`, ["--mime-type", "--brief", filePath], options);
 
-  // Check if file is binary or text
-  core.inf(`Output: ${output.trim()}`)
-  core.inf(`Error: ${error.trim()}`)
-  // return output.trim()
-  // return !mimeType.startsWith('text/');
-}
-
-async function getFileContent(github, octokit, path) {
-  const response = await octokit.rest.repos.getContent({
+//   // Check if file is binary or text
+//   core.inf(`Output: ${output.trim()}`)
+//   core.inf(`Error: ${error.trim()}`)
+//   // return output.trim()
+//   // return !mimeType.startsWith('text/');
+// }
+async function getFileTree(github, octokit, core) {
+  const { data: { commit: { sha } } } = await octokit.rest.repos.getBranch({
     owner: github.context.repo.owner,
     repo: github.context.repo.repo,
-    path: path
+    branch: github.context.payload.pull_request.head.ref
   })
-  return response
+
+  const { data: { tree } } = await octokit.rest.git.getTree({
+    owner: github.context.repo.owner,
+    repo: github.context.repo.repo,
+    tree_sha: sha
+  })
+
+  return tree
 }
 
 export { fileTypeChecker }
