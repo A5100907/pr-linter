@@ -8,9 +8,9 @@ async function fileTypeChecker(core, github, octokit, fs, exec) {
     for (let i = 0; i < changed_files.length; i++) {
       const file_path = changed_files[i]
       core.info(`Checking file '${file_path}' ...`)
-      const file_type = getFileType(file_path)
+      const file_type = getFileType(file_path, fs, exec)
       core.info(file_type)
-      
+
       if(!file_type) { 
         core.warning(`Error processing '${file_path}'!`)
         // TODO error handling
@@ -45,7 +45,7 @@ async function getChangedFiles(context, octokit) {
 //   catch (error) { return null }
 // }
 
-async function getFileType(filePath) {
+async function getFileType(filePath, fs, exec) {
   // Check if file exists
   try {
     await fs.access(filePath);
