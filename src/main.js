@@ -50,11 +50,9 @@ async function main() {
 
         // Feature: file checker
         if(core.getInput("enable_file_checker") === "true") {
-            const exec = require("@actions/exec")
-            const { promises: fs } = require("fs")
-
             core.info("PR file-type-checker is enabled for the repo ...")
-            const result = await fileTypeChecker(core, github, octokit, fs, exec)
+            const exec = require("@actions/exec")
+            const result = await fileTypeChecker(core, github, octokit, exec)
 
         }
         else { core.warning("PR file-type-checker is disabled for the repo, skipping.") }
