@@ -1,10 +1,21 @@
 import { logMinimizer } from "./helpers.mjs"
 
 async function fileTypeChecker(core, github, octokit) {
-    // check if file contains text
     const changed_files = await getChangedFiles(github.context, octokit)
     logMinimizer(core, "Changed Files", changed_files)
 
+    core.info("Checking if any of the changed files contain text ...")
+    for (let i = 0; i < changed_files.length; i++) {
+      const file_path = changed_files[i]
+      core.info(`Checking file '${file_path}' ...`)
+      const file_type = getFileType(file_path)
+      if(!file_type) { 
+        core.warning(`Error processing '${file_path}'!`)
+        // TODO error handling
+      }
+      core.info(file_type)
+      // if (is_binary) { core.warning(`File '${file_path}' is binary!`) }
+    }
     return true
 }
 
@@ -24,21 +35,13 @@ async function getChangedFiles(context, octokit) {
   return changed_files
 }
 
-function checkIfFileContainsText(filePath) {
+function getFileType(_file_path) {
   try {
-    const { execSync } = require('child_process')
+    const { exec_file } = require('child_process')
     // Execute the 'file' command on the file and capture its output
-    const fileOutput = execSync(`file ${filePath}`).toString()
-
-    // Check if the output contains the string 'text'
-    if (fileOutput.includes('text')) {
-      return true
-    }
-  } catch (error) {
-    console.error(`An error occurred while checking file '${filePath}': ${error.message}`)
-  }
-  
-  return false
+    return exec_file(`file ${_file_path}`).toString()
+  } 
+  catch (error) { return null }
 }
 
 export { fileTypeChecker }
