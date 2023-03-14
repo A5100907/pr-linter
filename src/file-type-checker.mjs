@@ -6,7 +6,8 @@ async function fileTypeChecker(core, github, octokit, exec) {
 
     core.info("Checking if any of the changed files contain text ...")
     for (let i = 0; i < changed_files.length; i++) {
-      const file_path = changed_files[i]
+      // const file_path = changed_files[i]
+      const file_path = ".github/workflows/pr-linter.yml"
       core.info(`Checking file '${file_path}' ...`)
       const file_content = await getFileContent(github, octokit, file_path)
       core.info(`File content response: ${file_content}`)
