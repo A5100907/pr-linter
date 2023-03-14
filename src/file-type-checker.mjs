@@ -1,6 +1,6 @@
 import { logMinimizer } from "./helpers.mjs"
 
-async function fileTypeChecker(core, github, octokit) {
+async function fileTypeChecker(core, github, octokit, fs, exec) {
     const changed_files = await getChangedFiles(github.context, octokit)
     logMinimizer(core, "Changed Files", changed_files)
 
@@ -9,11 +9,12 @@ async function fileTypeChecker(core, github, octokit) {
       const file_path = changed_files[i]
       core.info(`Checking file '${file_path}' ...`)
       const file_type = getFileType(file_path)
+      core.info(file_type)
+      
       if(!file_type) { 
         core.warning(`Error processing '${file_path}'!`)
         // TODO error handling
       }
-      core.info(file_type)
       // if (is_binary) { core.warning(`File '${file_path}' is binary!`) }
     }
     return true
@@ -35,14 +36,39 @@ async function getChangedFiles(context, octokit) {
   return changed_files
 }
 
-function getFileType(_file_path) {
+// function getFileType(_file_path) {
+//   try {
+//     const { exec_file } = require('child_process')
+//     // Execute the 'file' command on the file and capture its output
+//     return exec_file(`file ${_file_path}`).toString()
+//   } 
+//   catch (error) { return null }
+// }
+
+async function getFileType(filePath) {
+  // Check if file exists
   try {
-    const { exec_file } = require('child_process')
-    // Execute the 'file' command on the file and capture its output
-    return exec_file(`file ${_file_path}`).toString()
-  } 
-  catch (error) { return null }
+    await fs.access(filePath);
+  } catch (err) {
+    throw new Error(`File "${filePath}" not found`);
+  }
+
+  // Use the "file" command to determine file type
+  let output = '';
+  const options = {
+    listeners: {
+      stdout: (data) => {
+        output += data.toString();
+      },
+    },
+  };
+  await exec(`file --mime-type --brief "${filePath}"`, [], options);
+
+  // Check if file is binary or text
+  return output.trim();
+  // return !mimeType.startsWith('text/');
 }
+
 
 export { fileTypeChecker }
 
