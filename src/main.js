@@ -5,6 +5,7 @@ import { logMinimizer, logSeparator } from "./helpers.mjs"
 
 const core = require("@actions/core")
 const github = require("@actions/github")
+const exec = require("@actions/exec")
 
 async function main() {
     // main
@@ -50,8 +51,8 @@ async function main() {
 
         // Feature: file checker
         if(core.getInput("enable_file_checker") === "true") {
-            const exec = require('@actions/exec')
-            const { promises: fs } = require('fs')
+
+            const { promises: fs } = require("fs")
 
             core.info("PR file-type-checker is enabled for the repo ...")
             const result = await fileTypeChecker(core, github, octokit, fs, exec)
