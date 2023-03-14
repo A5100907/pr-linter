@@ -11,7 +11,7 @@ async function fileTypeChecker(core, github, octokit, exec) {
       const file_path = changed_files[i]
 
       core.info(`Checking file '${file_path}' ...`)
-      const file = tree.find(file => file.path === path);
+      const file = file_tree.find(file => file.path === path);
       if (!file) {
         core.error(`File not found at path: ${path}`)
         throw new Error(`File not found at path: ${path}`);
@@ -80,6 +80,7 @@ async function getFileTree(github, octokit, core) {
   })
   core.info(`Branch: ${github.context.payload.pull_request.head.ref}`)
   core.info(`SHA: ${sha}`)
+
   const { data: { tree } } = await octokit.rest.git.getTree({
     owner: github.context.repo.owner,
     repo: github.context.repo.repo,
