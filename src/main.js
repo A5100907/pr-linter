@@ -23,7 +23,7 @@ async function main() {
         logMinimizer(core, "github.context", github.context)
         logMinimizer(core, "PR Title", pr_title)
         logMinimizer(core, "Source branch", source_branch)
-        logMinimizer(core, "Target branch", base_branch)
+        logMinimizer(core, "Target branch", target_branch)
         logSeparator(core)
 
         // contains encountered errors during execution
