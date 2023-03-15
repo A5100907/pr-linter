@@ -7,7 +7,9 @@ async function fileTypeChecker(core, github, octokit) {
 
     core.info("Getting changed files ...")
     const changed_files = await getChangedFiles(github.context, octokit)
+    core.info(`Found ${changed_files.length} changed files`)
     logMinimizer(core, "Changed Files", changed_files)
+
 
     core.info("Getting repo's file tree ...")
     const file_tree = await getFileTree(github, octokit, core)
