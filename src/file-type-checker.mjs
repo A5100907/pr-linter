@@ -94,4 +94,3 @@ async function getFileBlob(github, octokit, file_sha) {
 }
 
 export { fileTypeChecker }
-
