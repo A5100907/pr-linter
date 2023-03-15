@@ -66,19 +66,19 @@ async function main() {
             }
         }
         else { core.warning("PR file-type-checker is disabled for the repo, skipping.") }
-
+        log_timestamp()
+        logSeparator(core)
         // check if execution encountered errors
         if (exec_errors.length) {
             // create a comment on a PR if there are errors
+            core.info("Sending a comment to a PR ...")
             linter_report.push("If you have any questions, please contact Fusion DevOps team\nfusion_devops@johnsoncontrols365.onmicrosoft.com")
             await createCommentOnPR(github, octokit, linter_report.join("\n- "))
+            log_timestamp()
+            logSeparator(core)
             throw new Error("Workflow encountered errors, see logs for details!") 
         }
-
         // end of the main block
-        log_timestamp()
-        logSeparator(core)
-        core.info("Exiting gracefully.")
         return
     }
     catch (error) { core.setFailed(error) }
@@ -112,8 +112,7 @@ function isPrTitleValid(regexes, pr_title) {
         }
 
         // code hit this block if it did not match against any defined regex patterns
-        core.warning("PR Title did not match against any of the allowed regex patterns.")
-        core.warning("Please refer to the PR Title naming policy for your project.")
+        core.error("PR Title did not match against any of the allowed regex patterns.")
         return false
     }
     catch (error) {
