@@ -2,7 +2,7 @@ import { logMinimizer } from "./helpers.mjs"
 import { isBinary } from "istextorbinary"
 
 async function fileTypeChecker(core, github, octokit) {
-
+  // main function to check file types
   let found_binaries = new Array()
 
   core.info("Getting changed files ...")
@@ -12,25 +12,32 @@ async function fileTypeChecker(core, github, octokit) {
   core.info("Getting repo's file tree ...")
   const file_tree = await getFileTree(github, octokit, core)
 
+  core.info("Checking file types ...")
   for (let i = 0; i < changed_files.length; i++) {
-    const file_path = changed_files[i]
-    const file = file_tree.find(file => file.path === file_path);
-    if (!file) { core.error(`File not found at path: ${file_path}`) }
+    // loop over every file
 
-    core.info('D1')
+    const file_path = changed_files[i]
+    // Find the file in the file tree
+    const file = file_tree.find(file => file.path === file_path)
+    if (!file) { 
+      core.error(`file-type-checker: File not found at path '${file_path}'`)
+      throw new Error(`file-type-checker: File not found at path '${file_path}'`)
+    }
+
+    // get file blob and check for it's type
     const file_blob = await getFileBlob(github, octokit, file.sha)
-    core.info('D2')
     if (isBinary(file_path, file_blob)) {
-      core.info('D3')
       core.error(`File at path: ${file_path} is a binary file`)
       found_binaries.push(file_path)
     }
   }
-  core.info('D4')
 
-  // TODO
-  // if (got_errors) {}
-  return true
+  // check if any binaries were found
+  if (error_flag) {  }
+  if (found_binaries.length > 0) {
+    return { result:false, found_binaries }
+  }
+  return { result:true, found_binaries }
 }
 
 async function getChangedFiles(context, octokit) {
@@ -50,6 +57,7 @@ async function getChangedFiles(context, octokit) {
 }
 
 async function getFileTree(github, octokit, core) {
+  // get a list of files in the repo
   const { data: { commit: { sha } } } = await octokit.rest.repos.getBranch({
     owner: github.context.repo.owner,
     repo: github.context.repo.repo,
@@ -68,6 +76,7 @@ async function getFileTree(github, octokit, core) {
 }
 
 async function getFileBlob(github, octokit, file_sha) {
+  // get the blob of a file
   const { data: { content } } = await octokit.rest.git.getBlob({
     owner: github.context.repo.owner,
     repo: github.context.repo.repo,

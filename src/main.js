@@ -1,4 +1,3 @@
-// import necessary modules
 import { fileTypeChecker } from "./file-type-checker.mjs"
 import { autoLabeler } from "./auto-labeler.mjs"
 import { logMinimizer, logSeparator } from "./helpers.mjs"
@@ -30,37 +29,37 @@ async function main() {
         // contains encountered errors during execution
         var exec_errors = new Array()
 
-        // TODO enable
         // validate Pull Request title
-        // if (!isPrTitleValid(regex_patterns, pr_title)) {
-        //     let pr_error = "PR Title did not pass regex validation."
-        //     core.error(pr_error)
-        //     exec_errors.push(pr_error)
-        // }
+        if (!isPrTitleValid(regex_patterns, pr_title)) {
+            let pr_error = "PR Title did not pass regex validation."
+            core.error(pr_error)
+            exec_errors.push(pr_error)
+        }
         log_timestamp()
         logSeparator(core)
 
-        // TODO enable
         // Feature: auto-labeler
-        // if (core.getInput("enable_labeler") === "true") {
-        //     core.info("PR auto-label is enabled for the repo ...")
-        //     const result = await autoLabeler(core, github, octokit)
-        //     if (!result) {
-        //         let auto_labeler_error = "Auto labeler encountered an error"
-        //         core.error(auto_labeler_error)
-        //         exec_errors.push(auto_labeler_error)
-        //     }
-        // }
-        // else { core.warning("PR auto-label is disabled for the repo, skipping.") }
+        if (core.getInput("enable_labeler") === "true") {
+            core.info("PR auto-label is enabled for the repo ...")
+            const result = await autoLabeler(core, github, octokit)
+            if (!result) {
+                let auto_labeler_error = "Auto labeler encountered an error"
+                core.error(auto_labeler_error)
+                exec_errors.push(auto_labeler_error)
+            }
+        }
+        else { core.warning("PR auto-label is disabled for the repo, skipping.") }
         log_timestamp()
         logSeparator(core)
 
         // Feature: file checker
         if(core.getInput("enable_file_checker") === "true") {
             core.info("PR file-type-checker is enabled for the repo ...")
-            const { isBinary } = require("istextorbinary")
-            const result = await fileTypeChecker(core, github, octokit, isBinary)
-
+            const { result, binaries } = await fileTypeChecker(core, github, octokit, isBinary)
+            if (!result) {
+                // TODO: add a comment to the PR with a list of binaries
+                core.setFailed("PR contains binary files.")
+            }
         }
         else { core.warning("PR file-type-checker is disabled for the repo, skipping.") }
 
