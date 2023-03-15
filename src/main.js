@@ -32,7 +32,7 @@ async function main() {
 
         // contains encountered errors during execution
         var exec_errors = new Array()
-        var linter_report = ['### :warning: **Pull Request Linter found some issues. Merge is blocked until resolved** :warning:']
+        var linter_report = new Array("### :warning: **Pull Request Linter found some issues. Merge is blocked until resolved** :warning:")
 
         // validate Pull Request title
         if (!isPrTitleValid(regex_patterns, pr_title)) {

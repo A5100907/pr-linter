@@ -1,5 +1,5 @@
 import { logMinimizer } from "./helpers.mjs"
-import { isBinary } from "istextorbinary"
+import { isText, isBinary } from "istextorbinary"
 
 async function fileTypeChecker(core, github, octokit) {
     // main function to check file types
@@ -8,17 +8,19 @@ async function fileTypeChecker(core, github, octokit) {
     core.info("Getting changed files ...")
     const changed_files = await getChangedFiles(github.context, octokit)
     core.info(`Found ${changed_files.length} changed files`)
-    logMinimizer(core, "Changed Files", changed_files)
-
+    // this filters out know text files by using file extension
+    const changed_non_text_files = changed_files.filter(file => !isText(file))
+    core.info(`Found ${changed_non_text_files.length} changed non-text files`)
+    logMinimizer(core, "Changed non-text files", changed_non_text_files)
 
     core.info("Getting repo's file tree ...")
     const file_tree = await getFileTree(github, octokit, core)
 
     core.info("Checking file types ...")
-    for (let i = 0; i < changed_files.length; i++) {
+    for (let i = 0; i < changed_non_text_files.length; i++) {
         // loop over every file
 
-        const file_path = changed_files[i]
+        const file_path = changed_non_text_files[i]
         // Find the file in the file tree
         const file = file_tree.find(file => file.path === file_path)
         if (!file) { 
@@ -26,7 +28,7 @@ async function fileTypeChecker(core, github, octokit) {
             throw new Error(`file-type-checker: File not found at path '${file_path}'`)
         }
 
-        // get file blob and check for it's type
+        // get file blob and confirm it is a binary file
         const file_blob = await getFileBlob(github, octokit, file.sha)
         if (isBinary(file_path, file_blob)) {
             core.error(`File at path: ${file_path} is a binary file`)
@@ -37,23 +39,6 @@ async function fileTypeChecker(core, github, octokit) {
     if (found_binaries.length > 0) { return { result:false, binaries:found_binaries }}
     return { result:true, binaries:found_binaries }
 }
-
-// TODO bug - only finds the files from last commit instead of all commits in the PR
-// async function getChangedFiles(context, octokit) {
-//     // get a list of changed files in a PR
-//     const owner = context.payload.repository.owner.login
-//     const repo = context.payload.repository.name
-//     const pr_number = context.payload.pull_request.number
-
-//     const { data: files } = await octokit.rest.pulls.listFiles({
-//         owner,
-//         repo,
-//         pull_number: pr_number,
-//     })
-
-//     const changed_files = files.map((file) => file.filename)
-//     return changed_files
-// }
 
 async function getChangedFiles(context, octokit) {
     // get a list of changed files in a PR
