@@ -48,40 +48,6 @@ async function getChangedFiles(context, octokit) {
   return changed_files
 }
 
-// function getFileType(_file_path) {
-//   try {
-//     const { exec_file } = require('child_process')
-//     // Execute the 'file' command on the file and capture its output
-//     return exec_file(`file ${_file_path}`).toString()
-//   } 
-//   catch (error) { return null }
-// }
-
-// async function getFileType(filePath, exec, core) {
-//   // // Check if file exists
-//   // try {
-//   //   await fs.access(filePath);
-//   // } catch (err) {
-//   //   throw new Error(`File "${filePath}" not found`);
-//   // }
-
-//   // Use the "file" command to determine file type
-//   let output = ""
-//   let error = ""
-//   const options = {}
-//   options.listeners = {
-//     stdout: (data) => { output += data.toString() },
-//     stderr: (data) => { error += data.toString() }
-//   }
-
-//   await exec.exec(`file`, ["--mime-type", "--brief", filePath], options);
-
-//   // Check if file is binary or text
-//   core.inf(`Output: ${output.trim()}`)
-//   core.inf(`Error: ${error.trim()}`)
-//   // return output.trim()
-//   // return !mimeType.startsWith('text/');
-// }
 async function getFileTree(github, octokit, core) {
   const { data: { commit: { sha } } } = await octokit.rest.repos.getBranch({
     owner: github.context.repo.owner,
