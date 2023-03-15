@@ -8,18 +8,22 @@ async function fileTypeChecker(core, github, octokit) {
     core.info("Getting changed files ...")
     const changed_files = await getChangedFiles(github.context, octokit)
     core.info(`Found ${changed_files.length} changed files`)
-    // this filters out know text files by using file extension
+    
+    // this filters out know text files by using file extension. This is a quick check to avoid checking the file type of every file
+    // full list of known text extensions can be found here: https://raw.githubusercontent.com/bevry/textextensions/master/source/index.ts
+    // every file that did not pass the filter will be checked for binary type using files content (blob) as well as its file extension
     const changed_non_text_files = changed_files.filter(file => !isText(file))
     core.info(`Found ${changed_non_text_files.length} changed non-text files`)
     logMinimizer(core, "Changed non-text files", changed_non_text_files)
-
+    
+    // if initial filter marks all files as text, skip the rest of the checks
+    if (changed_non_text_files.length === 0) { return { result:true, binaries:found_binaries }}
+    
     core.info("Getting repo's file tree ...")
     const file_tree = await getFileTree(github, octokit, core)
 
     core.info("Checking file types ...")
     for (let i = 0; i < changed_non_text_files.length; i++) {
-        // loop over every file
-
         const file_path = changed_non_text_files[i]
         // Find the file in the file tree
         const file = file_tree.find(file => file.path === file_path)
