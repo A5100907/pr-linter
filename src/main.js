@@ -55,7 +55,7 @@ async function main() {
         // Feature: file checker
         if(core.getInput("enable_file_checker") === "true") {
             core.info("PR file-type-checker is enabled for the repo ...")
-            const { result, binaries } = await fileTypeChecker(core, github, octokit, isBinary)
+            const { result, binaries } = await fileTypeChecker(core, github, octokit)
             if (!result) {
                 // TODO: add a comment to the PR with a list of binaries
                 core.setFailed("PR contains binary files.")
