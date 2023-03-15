@@ -56,6 +56,8 @@ async function main() {
         if(core.getInput("enable_file_checker") === "true") {
             core.info("PR file-type-checker is enabled for the repo ...")
             const { result, binaries } = await fileTypeChecker(core, github, octokit)
+            logMinimizer(core, "Result", result)
+            logMinimizer(core, "Binary files", binaries)
             if (!result) {
                 const comment = `PR contains binary files: ${binaries.join(", ")}`
                 await createCommentOnPR(github, octokit, comment)
