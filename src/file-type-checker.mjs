@@ -19,7 +19,7 @@ async function fileTypeChecker(core, github, octokit, exec) {
         got_errors = true
       }
 
-      const file_blob = await getFileBlob(github, file.sha)
+      const file_blob = await getFileBlob(github, octokit, file.sha)
       logMinimizer(core, "File Blob Data", file_blob)
     }
 
@@ -96,7 +96,7 @@ async function getFileTree(github, octokit, core) {
   return tree
 }
 
-async function getFileBlob(github, file_sha) {
+async function getFileBlob(github, octokit, file_sha) {
   const { data: { content } } = await octokit.rest.git.getBlob({
     owner: github.context.repo.owner,
     repo: github.context.repo.repo,
