@@ -32,8 +32,8 @@ async function fileTypeChecker(core, github, octokit) {
         }
     }
 
-    if (found_binaries.length > 0) { return { result:false, found_binaries }}
-    return { result:true, found_binaries }
+    if (found_binaries.length > 0) { return { result:false, binaries:found_binaries }}
+    return { result:true, binaries:found_binaries }
 }
 
 async function getChangedFiles(context, octokit) {
