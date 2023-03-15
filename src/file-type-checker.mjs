@@ -1,6 +1,7 @@
 import { logMinimizer } from "./helpers.mjs"
+import { isBinary } from "istextorbinary"
 
-async function fileTypeChecker(core, github, octokit, isBinary) {
+async function fileTypeChecker(core, github, octokit) {
 
   let found_binaries = new Array()
 
@@ -19,9 +20,9 @@ async function fileTypeChecker(core, github, octokit, isBinary) {
     core.info('D1')
     const file_blob = await getFileBlob(github, octokit, file.sha)
     core.info('D2')
-    if (isBinary(file.path, file_blob)) {
+    if (isBinary(file_path, file_blob)) {
       core.info('D3')
-      core.error(`File at path: ${path} is a binary file`)
+      core.error(`File at path: ${file_path} is a binary file`)
       found_binaries.push(file_path)
     }
   }
