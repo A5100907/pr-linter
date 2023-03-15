@@ -28,7 +28,7 @@ async function main() {
 
         // contains encountered errors during execution
         var exec_errors = new Array()
-        var linter_report = [':warning: Linter found some issues. Please check the report below. :warning:']
+        var linter_report = [':warning: Pull Request Linter found some issues.:warning:']
 
         // validate Pull Request title
         if (!isPrTitleValid(regex_patterns, pr_title)) {
@@ -60,7 +60,7 @@ async function main() {
             core.info("PR file-type-checker is enabled for the repo ...")
             const { result, binaries } = await fileTypeChecker(core, github, octokit)
             if (!result) {
-                const binaries_comment = `PR contains binary files:\n${binaries.join("\n\t")}`
+                const binaries_comment = `PR contains binary files:\n${binaries.join("\n\t")}\nAddition of binaries to the repo must be approved by repo administrator.\nContact Fusion DevOps team\nfusion_devops@johnsoncontrols365.onmicrosoft.com`
                 linter_report.push(binaries_comment)
                 exec_errors.push("PR contains binary files.")
             }
