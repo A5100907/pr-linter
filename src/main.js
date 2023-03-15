@@ -15,18 +15,19 @@ async function main() {
     const octokit = github.getOctokit(gh_token)
     const pr_title = github.context.payload.pull_request.title
     const source_branch = github.context.payload.pull_request.head.ref
+    const source_sha = github.context.payload.pull_request.head.sha
     const target_branch = github.context.payload.pull_request.base.ref
+    const target_sha = github.context.payload.pull_request.base.sha
 
     try {
         // print out relevant available data from received from a github
         logSeparator(core)
         logMinimizer(core, "github.context", github.context)
         logMinimizer(core, "PR Title", pr_title)
-        logMinimizer(core, "Source branch", source_branch)
-        logMinimizer(core, "Target branch", target_branch)
-        logSeparator(core)
-        logMinimizer(core, "pull request head", github.context.payload.pull_request.head)
-        logMinimizer(core, "pull request base", github.context.payload.pull_request.base)
+        logMinimizer(core, "HEAD branch", source_branch)
+        logMinimizer(core, "HEAD sha", source_sha)
+        logMinimizer(core, "Base branch", target_branch)
+        logMinimizer(core, "Base sha", target_sha)
         logSeparator(core)
 
         // contains encountered errors during execution

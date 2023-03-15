@@ -37,19 +37,40 @@ async function fileTypeChecker(core, github, octokit) {
 }
 
 // TODO bug - only finds the files from last commit instead of all commits in the PR
+// async function getChangedFiles(context, octokit) {
+//     // get a list of changed files in a PR
+//     const owner = context.payload.repository.owner.login
+//     const repo = context.payload.repository.name
+//     const pr_number = context.payload.pull_request.number
+
+//     const { data: files } = await octokit.rest.pulls.listFiles({
+//         owner,
+//         repo,
+//         pull_number: pr_number,
+//     })
+
+//     const changed_files = files.map((file) => file.filename)
+//     return changed_files
+// }
+
 async function getChangedFiles(context, octokit) {
     // get a list of changed files in a PR
     const owner = context.payload.repository.owner.login
     const repo = context.payload.repository.name
     const pr_number = context.payload.pull_request.number
+    const head_sha = github.context.payload.pull_request.head.sha
+    const base_sha = github.context.payload.pull_request.base.sha
 
-    const { data: files } = await octokit.rest.pulls.listFiles({
+    // Get the diff between the head and base commits of the pull request
+    const { data: diff } = await octokit.rest.repos.compareCommits({
         owner,
         repo,
-        pull_number: pr_number,
-    })
+        base: base_sha,
+        head: head_sha,
+    });
 
-    const changed_files = files.map((file) => file.filename)
+    // Extract the list of changed files from the diff
+    const changed_files = diff.files.map((file) => file.filename);
     return changed_files
 }
 
