@@ -36,6 +36,7 @@ async function fileTypeChecker(core, github, octokit) {
     return { result:true, binaries:found_binaries }
 }
 
+// TODO bug - only finds the files from last commit instead of all commits in the PR
 async function getChangedFiles(context, octokit) {
     // get a list of changed files in a PR
     const owner = context.payload.repository.owner.login

@@ -25,6 +25,9 @@ async function main() {
         logMinimizer(core, "Source branch", source_branch)
         logMinimizer(core, "Target branch", target_branch)
         logSeparator(core)
+        logMinimizer(core, "pull request head", github.context.payload.pull_request.head)
+        logMinimizer(core, "pull request base", github.context.payload.pull_request.base)
+        logSeparator(core)
 
         // contains encountered errors during execution
         var exec_errors = new Array()
