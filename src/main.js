@@ -60,7 +60,7 @@ async function main() {
             core.info("PR file-type-checker is enabled for the repo ...")
             const { result, binaries } = await fileTypeChecker(core, github, octokit)
             if (!result) {
-                const binaries_comment = `PR contains binary files: ${binaries.join("\n")}`
+                const binaries_comment = `PR contains binary files:\n${binaries.join("\n\t")}`
                 linter_report.push(binaries_comment)
                 exec_errors.push("PR contains binary files.")
             }
@@ -70,7 +70,7 @@ async function main() {
         // check if execution encountered errors
         if (exec_errors.length) {
             // create a comment on a PR if there are errors
-            await createCommentOnPR(github, octokit, linter_report.join("\n"))
+            await createCommentOnPR(github, octokit, linter_report.join("\n- "))
             throw new Error("Workflow encountered errors, see logs for details!") 
         }
 
