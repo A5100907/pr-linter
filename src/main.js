@@ -28,7 +28,7 @@ async function main() {
 
         // contains encountered errors during execution
         var exec_errors = new Array()
-        var linter_report = [':warning: Pull Request Linter found some issues.:warning:']
+        var linter_report = ['###:warning: **Pull Request Linter found some issues.** :warning:']
 
         // validate Pull Request title
         if (!isPrTitleValid(regex_patterns, pr_title)) {
@@ -60,7 +60,7 @@ async function main() {
             core.info("PR file-type-checker is enabled for the repo ...")
             const { result, binaries } = await fileTypeChecker(core, github, octokit)
             if (!result) {
-                const binaries_comment = `PR contains binary files:\n${binaries.join("\n\t")}\nAddition of binaries to the repo must be approved by repo administrator.\nContact Fusion DevOps team\nfusion_devops@johnsoncontrols365.onmicrosoft.com`
+                const binaries_comment = `PR contains binary files.\nAddition of binaries to the repo must be approved by repo administrator.\n\`\`\`\n${binaries.join("\n")}\n\`\`\`\n`
                 linter_report.push(binaries_comment)
                 exec_errors.push("PR contains binary files.")
             }
@@ -70,6 +70,7 @@ async function main() {
         // check if execution encountered errors
         if (exec_errors.length) {
             // create a comment on a PR if there are errors
+            linter_report.push("If you have any questions, please contact Fusion DevOps team\nfusion_devops@johnsoncontrols365.onmicrosoft.com")
             await createCommentOnPR(github, octokit, linter_report.join("\n- "))
             throw new Error("Workflow encountered errors, see logs for details!") 
         }
