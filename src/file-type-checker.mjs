@@ -1,30 +1,32 @@
 import { logMinimizer } from "./helpers.mjs"
 
-async function fileTypeChecker(core, github, octokit, exec) {
-    let got_errors = false
-    core.info("Getting changed files ...")
-    const changed_files = await getChangedFiles(github.context, octokit)
-    logMinimizer(core, "Changed Files", changed_files)
+async function fileTypeChecker(core, github, octokit) {
+  const isBinary = require("istextorbinary")
+  let found_binaries = new Array()
+  
+  core.info("Getting changed files ...")
+  const changed_files = await getChangedFiles(github.context, octokit)
+  logMinimizer(core, "Changed Files", changed_files)
 
-    core.info("Getting repo's file tree ...")
-    const file_tree = await getFileTree(github, octokit, core)
+  core.info("Getting repo's file tree ...")
+  const file_tree = await getFileTree(github, octokit, core)
 
-    for (let i = 0; i < changed_files.length; i++) {
-      const file_path = changed_files[i]
+  for (let i = 0; i < changed_files.length; i++) {
+    const file_path = changed_files[i]
 
-      const file = file_tree.find(file => file.path === file_path);
-      if (!file) {
-        core.error(`File not found at path: ${file_path}`)
-        got_errors = true
-      }
+    const file = file_tree.find(file => file.path === file_path);
+    if (!file) { core.error(`File not found at path: ${file_path}`) }
 
-      const file_blob = await getFileBlob(github, octokit, file.sha)
-
+    const file_blob = await getFileBlob(github, octokit, file.sha)
+    if (isBinary(file.path, file_blob)) {
+      core.error(`File at path: ${path} is a binary file`)
+      found_binaries.push(file_path)
     }
+  }
 
-    // TODO
-    // if (got_errors) {}
-    return true
+  // TODO
+  // if (got_errors) {}
+  return true
 }
 
 async function getChangedFiles(context, octokit) {
@@ -101,7 +103,7 @@ async function getFileBlob(github, octokit, file_sha) {
     repo: github.context.repo.repo,
     file_sha: file_sha
   })
-  return content
+  return Buffer.from(content, 'base64')
 }
 
 export { fileTypeChecker }
