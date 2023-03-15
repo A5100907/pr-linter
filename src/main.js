@@ -64,9 +64,10 @@ async function main() {
             core.info("PR file-type-checker is enabled for the repo ...")
             const { result, binaries } = await fileTypeChecker(core, github, octokit)
             if (!result) {
-                const binaries_comment = `PR contains binary files.\nAddition of binaries to the repo must be approved by repo administrator.\n\`\`\`\n${binaries.join("\n")}\n\`\`\`\n`
+                const binaries_count = binaries.length
+                const binaries_comment = `PR contains ${binaries_count} binary files.\nAddition of binaries to the repo must be approved by repo administrator.\n\`\`\`\n${binaries.join("\n")}\n\`\`\`\n`
                 linter_report.push(binaries_comment)
-                exec_errors.push("PR contains binary files.")
+                exec_errors.push(`PR contains ${binaries_count} binary files.`)
             }
         }
         else { core.warning("PR file-type-checker is disabled for the repo, skipping.") }
