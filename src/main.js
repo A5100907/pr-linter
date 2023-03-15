@@ -65,6 +65,7 @@ async function main() {
             const { result, binaries } = await fileTypeChecker(core, github, octokit)
             if (!result) {
                 const binaries_count = binaries.length
+                core.info(`Found ${binaries_count} binary files.`)
                 const binaries_comment = `PR contains ${binaries_count} binary files.\nAddition of binaries to the repo must be approved by repo administrator.\n\`\`\`\n${binaries.join("\n")}\n\`\`\`\n`
                 linter_report.push(binaries_comment)
                 exec_errors.push(`PR contains ${binaries_count} binary files.`)
