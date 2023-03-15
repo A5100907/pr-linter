@@ -28,10 +28,12 @@ async function main() {
 
         // contains encountered errors during execution
         var exec_errors = new Array()
+        var linter_report = [':warning: Linter found some issues. Please check the report below. :warning:']
 
         // validate Pull Request title
         if (!isPrTitleValid(regex_patterns, pr_title)) {
             let pr_error = "PR Title did not pass regex validation."
+            linter_report.push(pr_error)
             core.error(pr_error)
             exec_errors.push(pr_error)
         }
@@ -44,6 +46,7 @@ async function main() {
             const result = await autoLabeler(core, github, octokit)
             if (!result) {
                 let auto_labeler_error = "Auto labeler encountered an error"
+                linter_report.push(auto_labeler_error)
                 core.error(auto_labeler_error)
                 exec_errors.push(auto_labeler_error)
             }
@@ -56,18 +59,20 @@ async function main() {
         if(core.getInput("enable_file_checker") === "true") {
             core.info("PR file-type-checker is enabled for the repo ...")
             const { result, binaries } = await fileTypeChecker(core, github, octokit)
-            logMinimizer(core, "Result", result)
-            logMinimizer(core, "Binary files", binaries)
             if (!result) {
-                const comment = `PR contains binary files: ${binaries.join(", ")}`
-                await createCommentOnPR(github, octokit, comment)
-                core.setFailed("PR contains binary files.")
+                const binaries_comment = `PR contains binary files: ${binaries.join("\n")}`
+                linter_report.push(binaries_comment)
+                exec_errors.push("PR contains binary files.")
             }
         }
         else { core.warning("PR file-type-checker is disabled for the repo, skipping.") }
 
         // check if execution encountered errors
-        if (exec_errors.length) { throw new Error("Workflow encountered errors, see logs for details!") }
+        if (exec_errors.length) {
+            // create a comment on a PR if there are errors
+            await createCommentOnPR(github, octokit, linter_report.join("\n"))
+            throw new Error("Workflow encountered errors, see logs for details!") 
+        }
 
         // end of the main block
         log_timestamp()
