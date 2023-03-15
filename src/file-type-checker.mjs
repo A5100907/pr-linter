@@ -12,7 +12,6 @@ async function fileTypeChecker(core, github, octokit, exec) {
     for (let i = 0; i < changed_files.length; i++) {
       const file_path = changed_files[i]
 
-      core.info(`Checking file '${file_path}' ...`)
       const file = file_tree.find(file => file.path === file_path);
       if (!file) {
         core.error(`File not found at path: ${file_path}`)
@@ -20,7 +19,7 @@ async function fileTypeChecker(core, github, octokit, exec) {
       }
 
       const file_blob = await getFileBlob(github, octokit, file.sha)
-      logMinimizer(core, "File Blob Data", file_blob)
+
     }
 
     // TODO
