@@ -19,7 +19,7 @@ async function fileTypeChecker(core, github, octokit, exec) {
         got_errors = true
       }
 
-      const file_blob = await octokit.rest.git.getFileBlob(github, file.sha)
+      const file_blob = await getFileBlob(github, file.sha)
       logMinimizer(core, "File Blob Data", file_blob)
     }
 
