@@ -59,9 +59,8 @@ async function getChangedFiles(context, octokit) {
     // get a list of changed files in a PR
     const owner = context.payload.repository.owner.login
     const repo = context.payload.repository.name
-    const pr_number = context.payload.pull_request.number
-    const head_sha = github.context.payload.pull_request.head.sha
-    const base_sha = github.context.payload.pull_request.base.sha
+    const head_sha = context.payload.pull_request.head.sha
+    const base_sha = context.payload.pull_request.base.sha
 
     // Get the diff between the head and base commits of the pull request
     const { data: diff } = await octokit.rest.repos.compareCommits({
