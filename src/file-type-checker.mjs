@@ -5,7 +5,6 @@ async function fileTypeChecker(core, github, octokit, exec) {
     logMinimizer(core, "Changed Files", changed_files)
 
     const file_tree = await getFileTree(github, octokit, core)
-    logMinimizer(core, "File Tree", file_tree)
 
     for (let i = 0; i < changed_files.length; i++) {
       const file_path = changed_files[i]

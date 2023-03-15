@@ -5,6 +5,7 @@ import { logMinimizer, logSeparator } from "./helpers.mjs"
 
 const core = require("@actions/core")
 const github = require("@actions/github")
+const time_start = process.hrtime()
 
 async function main() {
     // main
@@ -36,7 +37,7 @@ async function main() {
         //     core.error(pr_error)
         //     exec_errors.push(pr_error)
         // }
-
+        log_timestamp()
         logSeparator(core)
 
         // TODO enable
@@ -51,7 +52,7 @@ async function main() {
         //     }
         // }
         // else { core.warning("PR auto-label is disabled for the repo, skipping.") }
-
+        log_timestamp()
         logSeparator(core)
 
         // Feature: file checker
@@ -67,6 +68,7 @@ async function main() {
         if (exec_errors.length) { throw new Error("Workflow encountered errors, see logs for details!") }
 
         // end of the main block
+        log_timestamp()
         logSeparator(core)
         core.info("Exiting gracefully.")
         return
@@ -114,4 +116,10 @@ function isPrTitleValid(regexes, pr_title) {
     }
 }
 
+function log_timestamp() {
+    // returns a timestamp in seconds
+    const hrtime_end = process.hrtime(time_start)
+    const seconds = hrtime_end[0] + hrtime_end[1] / 1e9
+    core.info(`Execution time: ${seconds.toFixed(2)} seconds`)
+}
 main()
