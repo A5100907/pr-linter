@@ -16,7 +16,7 @@ async function main() {
     const pr_title = github.context.payload.pull_request.title
     const source_branch = github.context.payload.pull_request.head.ref
     const target_branch = github.context.payload.pull_request.base.ref
-    
+
     try {
         // print out relevant available data from received from a github
         logSeparator(core)
@@ -57,7 +57,8 @@ async function main() {
             core.info("PR file-type-checker is enabled for the repo ...")
             const { result, binaries } = await fileTypeChecker(core, github, octokit)
             if (!result) {
-                // TODO: add a comment to the PR with a list of binaries
+                const comment = `PR contains binary files: ${binaries.join(", ")}`
+                await createCommentOnPR(github, octokit, comment)
                 core.setFailed("PR contains binary files.")
             }
         }
@@ -71,7 +72,7 @@ async function main() {
         logSeparator(core)
         core.info("Exiting gracefully.")
         return
-    } 
+    }
     catch (error) { core.setFailed(error) }
 }
 
@@ -85,7 +86,7 @@ function isPrTitleValid(regexes, pr_title) {
         // loop over every defined matching pattern
         regexes.forEach(pattern => {
             core.info(`Validating '${pr_title}' against '${pattern}'`)
-            
+
             // validate against current regex pattern
             const regex = RegExp(pattern)
             if (regex.test(pr_title)) {
@@ -94,7 +95,7 @@ function isPrTitleValid(regexes, pr_title) {
             }
             else { core.info("Not a match.") }
         })
-        
+
         // PR need to match at least one pattern for success
         if (pr_title_is_valid) {
             core.info("PR Title matched at least one pattern.")
@@ -106,7 +107,7 @@ function isPrTitleValid(regexes, pr_title) {
         core.warning("PR Title did not match against any of the allowed regex patterns.")
         core.warning("Please refer to the PR Title naming policy for your project.")
         return false
-    } 
+    }
     catch (error) {
         core.error(error)
         core.error("Something went wrong in regex pattern validation!")
@@ -121,4 +122,15 @@ function log_timestamp() {
     const seconds = hrtime_end[0] + hrtime_end[1] / 1e9
     core.info(`Execution time: ${seconds.toFixed(2)} seconds`)
 }
+
+async function createCommentOnPR(github, octokit, comment) {
+    // creates a comment on a PR
+    await octokit.rest.issues.createComment({
+        owner: github.context.repo.owner,
+        repo: github.context.repo.repo,
+        issue_number: github.context.payload.pull_request.number,
+        body: comment
+    })
+}
+
 main()

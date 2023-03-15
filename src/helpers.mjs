@@ -9,4 +9,5 @@ function logSeparator(core) {
     // print out a visual separator into a log
     core.info("=".repeat(80))
 }
+
 export { logMinimizer, logSeparator }
