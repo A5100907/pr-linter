@@ -13,16 +13,19 @@ async function fileTypeChecker(core, github, octokit, isBinary) {
 
   for (let i = 0; i < changed_files.length; i++) {
     const file_path = changed_files[i]
-
     const file = file_tree.find(file => file.path === file_path);
     if (!file) { core.error(`File not found at path: ${file_path}`) }
 
+    core.info('D1')
     const file_blob = await getFileBlob(github, octokit, file.sha)
+    core.info('D2')
     if (isBinary(file.path, file_blob)) {
+      core.info('D3')
       core.error(`File at path: ${path} is a binary file`)
       found_binaries.push(file_path)
     }
   }
+  core.info('D4')
 
   // TODO
   // if (got_errors) {}
