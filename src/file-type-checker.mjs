@@ -84,7 +84,8 @@ async function getFileTree(github, octokit, core) {
   const { data: { tree } } = await octokit.rest.git.getTree({
     owner: github.context.repo.owner,
     repo: github.context.repo.repo,
-    tree_sha: sha
+    tree_sha: sha,
+    recursive: true
   })
 
   return tree
