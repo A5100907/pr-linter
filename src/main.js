@@ -32,7 +32,7 @@ async function main() {
 
         // validate Pull Request title
         if (!isPrTitleValid(regex_patterns, pr_title)) {
-            let pr_error = "PR Title did not pass regex validation."
+            let pr_error = "PR Title did not pass regex validation.\nReview title syntax guidelines here:\nhttps://jci-intrusion.atlassian.net/wiki/spaces/DEV/pages/16942140/Pull+Request+Title+Syntax"
             linter_report.push(pr_error)
             core.error(pr_error)
             exec_errors.push(pr_error)
