@@ -32,8 +32,6 @@ async function fileTypeChecker(core, github, octokit) {
     }
   }
 
-  // check if any binaries were found
-  if (error_flag) {  }
   if (found_binaries.length > 0) {
     return { result:false, found_binaries }
   }
