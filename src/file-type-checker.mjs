@@ -1,9 +1,9 @@
 import { logMinimizer } from "./helpers.mjs"
 
-async function fileTypeChecker(core, github, octokit) {
-  const isBinary = require("istextorbinary")
+async function fileTypeChecker(core, github, octokit, isBinary) {
+
   let found_binaries = new Array()
-  
+
   core.info("Getting changed files ...")
   const changed_files = await getChangedFiles(github.context, octokit)
   logMinimizer(core, "Changed Files", changed_files)
