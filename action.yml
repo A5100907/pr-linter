@@ -6,16 +6,21 @@ inputs:
   github_token:
     description: "GitHub token"
     required: true
-  
+
   title_regex:
     description: "Semicolon separated list of Regex patterns to validate PR's title against"
     required: true
-  
+
   enable_labeler:
     description: "On/Off auto tagging feature for multi-project repos. Default is On"
     required: false
     default: true
-  
+
+  enable_file_checker:
+    description: "On/Off file type checker."
+    required: false
+    default: true
+
 runs:
   using: "node16"
   main: "dist/index.js"

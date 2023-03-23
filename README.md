@@ -27,11 +27,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: run-pr-linter
-        uses: A5100907/pr-linter@feature/SDO-2516
+        uses: A5100907/pr-linter@v1.20
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           title_regex: ^(\[([A-Z0-9]{1,6}-[0-9]{1,6})\] [a-zA-Z0-9 \!\?\'\"\=\.\,\(\)\_\-\+]*)$;^(\[(BF|HF)\] [a-zA-Z0-9 \!\?\'\"\=\.\,\(\)\_\-\+]*)$
-               
+          enable_labeler: true
+          enable_file_checker: true
 ```
 #### This would enforce following:
 
@@ -57,3 +58,8 @@ jobs:
 * Label properties like color and description can be changed later manually if required.
 * Enabled by default for all repos
 * Can be explicitly disabled by supplying workflow argument `enable_labeler: false` to a step 'run-pr-linter'
+
+### File type checker
+*  This feature checks for files added in the PR and if binaries found, raise an error. This makes it so PR with binaries must be approved by an Administrator.
+* Enabled by default for all repos
+* Can be explicitly disabled by supplying workflow argument `enable_file_checker: false` to a step 'run-pr-linter'
