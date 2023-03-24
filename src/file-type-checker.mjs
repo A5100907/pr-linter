@@ -2,23 +2,26 @@ import { logMinimizer } from "./helpers.mjs"
 import { isText, isBinary } from "istextorbinary"
 
 async function fileTypeChecker(core, github, octokit) {
+    // TODO remove global
+    const core = core
+
     // main function to check file types
     let found_binaries = new Array()
 
     core.info("Getting changed files ...")
     const changed_files = await getChangedFiles(github.context, octokit)
     core.info(`Found ${changed_files.length} changed files`)
-    
+
     // this filters out know text files by using file extension. This is a quick check to avoid checking the file type of every file
     // full list of known text extensions can be found here: https://raw.githubusercontent.com/bevry/textextensions/master/source/index.ts
     // every file that did not pass the filter will be checked for binary type using files content (blob) as well as its file extension
     const changed_non_text_files = changed_files.filter(file => !isText(file))
     core.info(`Found ${changed_non_text_files.length} files that needs explicit file type check (non in the list of known text files)`)
     logMinimizer(core, "Changed files to explicitly check for type", changed_non_text_files)
-    
+
     // if initial filter marks all files as text, skip the rest of the checks
     if (changed_non_text_files.length === 0) { return { result:true, binaries:found_binaries }}
-    
+
     core.info("Getting repo's file tree ...")
     const file_tree = await getFileTree(github, octokit, core)
 
@@ -27,7 +30,7 @@ async function fileTypeChecker(core, github, octokit) {
         const file_path = changed_non_text_files[i]
         // Find the file in the file tree
         const file = file_tree.find(file => file.path === file_path)
-        if (!file) { 
+        if (!file) {
             core.error(`file-type-checker: File not found at path '${file_path}'`)
             throw new Error(`file-type-checker: File not found at path '${file_path}'`)
         }
@@ -51,6 +54,8 @@ async function getChangedFiles(context, octokit) {
     const head_sha = context.payload.pull_request.head.sha
     const base_sha = context.payload.pull_request.base.sha
 
+    core.info('head_sha '+ context.payload.pull_request.head.sha)
+    core.info('base_sha '+ context.payload.pull_request.base.sha)
     // Get the diff between the head and base commits of the pull request
     const { data: diff } = await octokit.rest.repos.compareCommits({
         owner,
@@ -59,6 +64,7 @@ async function getChangedFiles(context, octokit) {
         head: head_sha,
     });
 
+    logMinimizer(core, 'DEBUG response compareCOmmits', diff)
     // Extract the list of changed files from the diff
     const changed_files = diff.files.map((file) => file.filename);
     return changed_files
