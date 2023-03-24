@@ -69,7 +69,7 @@ async function fileTypeChecker(core, github, octokit) {
 //     return changed_files
 // }
 
-async function getChangedFiles(context, octokit) {
+async function getChangedFiles(context, octokit, core) {
     const owner = context.payload.repository.owner.login
     const repo = context.payload.repository.name
     const head_sha = context.payload.pull_request.head.sha
@@ -88,10 +88,11 @@ async function getChangedFiles(context, octokit) {
         repo,
         base: base_sha,
         head: head_sha,
-        per_page: 300,
+        per_page: 50,
         page,
       });
 
+      logMinimizer(core, `Page ${page} diff`, diff)
       // Add the files from this page to the list of changed files
       const pageFiles = diff.files.map((file) => file.filename);
       changed_files = changed_files.concat(pageFiles);
