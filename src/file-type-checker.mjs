@@ -45,7 +45,7 @@ async function fileTypeChecker(core, github, octokit) {
     return { result:true, binaries:found_binaries }
 }
 
-async function getChangedFiles(context, octokit) {
+async function getChangedFiles(context, octokit, core) {
     // get a list of changed files in a PR
     const owner = context.payload.repository.owner.login
     const repo = context.payload.repository.name
