@@ -3,7 +3,7 @@ import { isText, isBinary } from "istextorbinary"
 
 async function fileTypeChecker(core, github, octokit) {
     // TODO remove global
-    const core = core
+    const gcore = core
 
     // main function to check file types
     let found_binaries = new Array()
@@ -54,8 +54,8 @@ async function getChangedFiles(context, octokit) {
     const head_sha = context.payload.pull_request.head.sha
     const base_sha = context.payload.pull_request.base.sha
 
-    core.info('head_sha '+ context.payload.pull_request.head.sha)
-    core.info('base_sha '+ context.payload.pull_request.base.sha)
+    gcore.info('head_sha '+ context.payload.pull_request.head.sha)
+    gcore.info('base_sha '+ context.payload.pull_request.base.sha)
     // Get the diff between the head and base commits of the pull request
     const { data: diff } = await octokit.rest.repos.compareCommits({
         owner,
@@ -64,7 +64,7 @@ async function getChangedFiles(context, octokit) {
         head: head_sha,
     });
 
-    logMinimizer(core, 'DEBUG response compareCOmmits', diff)
+    logMinimizer(gcore, 'DEBUG response compareCommits', diff)
     // Extract the list of changed files from the diff
     const changed_files = diff.files.map((file) => file.filename);
     return changed_files
