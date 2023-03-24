@@ -88,10 +88,10 @@ async function getChangedFiles(context, octokit, core) {
         repo,
         base: base_sha,
         head: head_sha,
-        per_page: 50,
         page,
       });
 
+      logMinimizer(core, `Page ${page} diff`, diff)
       logMinimizer(core, `Page ${page} diff.files`, diff.files)
       logMinimizer(core, `Page ${page} diff.files length`, diff.files.length)
       // Add the files from this page to the list of changed files
