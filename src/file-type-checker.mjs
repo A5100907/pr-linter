@@ -1,5 +1,6 @@
 import { logMinimizer } from "./helpers.mjs"
 import { isText, isBinary } from "istextorbinary"
+import { parseLinkHeader } from "parse-link-header"
 
 async function fileTypeChecker(core, github, octokit) {
     // main function to check file types

@@ -21,6 +21,7 @@
     "@actions/core": "^1.9.1",
     "@actions/github": "^5.0.0",
     "@vercel/ncc": "^0.28.6",
-    "istextorbinary": "^6.0.0"
+    "istextorbinary": "^6.0.0",
+    "parse-link-header": "^2.0.0"
   }
 }
