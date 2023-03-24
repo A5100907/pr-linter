@@ -136,7 +136,8 @@ async function getChangedFiles(context, octokit, core) {
     // return changed_files;
 }
 
-    // async function getChangedFiles(context, octokit, core) {
+// TODO implement pagination
+// async function getChangedFiles(context, octokit, core) {
     // const owner = context.payload.repository.owner.login
     // const repo = context.payload.repository.name
     // const pull_number = context.payload.pull_request.number
