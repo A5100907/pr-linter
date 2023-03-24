@@ -88,6 +88,7 @@ async function getChangedFiles(context, octokit, core) {
         repo,
         base: base_sha,
         head: head_sha,
+        per_page: 1,
         page,
       });
 
