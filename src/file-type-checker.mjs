@@ -126,14 +126,14 @@ async function getChangedFiles(context, octokit, core) {
     });
 
     // Extract the list of changed files from the list of files
-    const changed_files = response.files.map((file) => file.filename);
+    // const changed_files = response.files.map((file) => file.filename);
 
     logMinimizer(core, `Data:`, response)
-    logMinimizer(core, `Data Files:`, response.files)
-    logMinimizer(core, `changed_files:`, changed_files)
-    logMinimizer(core, `changed_files.size:`, changed_files.length)
+    // logMinimizer(core, `Data Files:`, response.files)
+    // logMinimizer(core, `changed_files:`, changed_files)
+    // logMinimizer(core, `changed_files.size:`, changed_files.length)
 
-    return changed_files;
+    // return changed_files;
 }
 
     // async function getChangedFiles(context, octokit, core) {
