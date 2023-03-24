@@ -45,30 +45,67 @@ async function fileTypeChecker(core, github, octokit) {
     return { result:true, binaries:found_binaries }
 }
 
-async function getChangedFiles(context, octokit, core) {
-    // get a list of changed files in a PR
+// async function getChangedFiles(context, octokit, core) {
+//     // get a list of changed files in a PR
+//     const owner = context.payload.repository.owner.login
+//     const repo = context.payload.repository.name
+//     const head_sha = context.payload.pull_request.head.sha
+//     const base_sha = context.payload.pull_request.base.sha
+
+//     core.info('head_sha '+ context.payload.pull_request.head.sha)
+//     core.info('base_sha '+ context.payload.pull_request.base.sha)
+//     // Get the diff between the head and base commits of the pull request
+//     const { data: diff } = await octokit.rest.repos.compareCommits({
+//         owner,
+//         repo,
+//         base: base_sha,
+//         head: head_sha,
+//     });
+
+//     core.info(`diff.files.size: ${diff.files.length}`)
+//     // Extract the list of changed files from the diff
+//     const changed_files = diff.files.map((file) => file.filename);
+//     core.info(`changed_files.size: ${changed_files.length}`)
+//     return changed_files
+// }
+
+async function getChangedFiles(context, octokit) {
     const owner = context.payload.repository.owner.login
     const repo = context.payload.repository.name
     const head_sha = context.payload.pull_request.head.sha
     const base_sha = context.payload.pull_request.base.sha
 
-    core.info('head_sha '+ context.payload.pull_request.head.sha)
-    core.info('base_sha '+ context.payload.pull_request.base.sha)
-    // Get the diff between the head and base commits of the pull request
-    const { data: diff } = await octokit.rest.repos.compareCommits({
+    // Keep track of all the changed files
+    let changed_files = [];
+
+    // The GitHub API returns a maximum of 300 files per page
+    // Keep requesting pages until we get all the files
+    let page = 1;
+    let hasMoreFiles = true;
+    while (hasMoreFiles) {
+      const { data: diff } = await octokit.rest.repos.compareCommits({
         owner,
         repo,
         base: base_sha,
         head: head_sha,
-    });
+        per_page: 300,
+        page,
+      });
 
-    logMinimizer(core, 'DEBUG response compareCommits', diff)
-    core.info(`diff.files.size: ${diff.files.length}`)
-    // Extract the list of changed files from the diff
-    const changed_files = diff.files.map((file) => file.filename);
-    core.info(`changed_files.size: ${changed_files.length}`)
-    return changed_files
-}
+      // Add the files from this page to the list of changed files
+      const pageFiles = diff.files.map((file) => file.filename);
+      changed_files = changed_files.concat(pageFiles);
+
+      // Check if there are more pages
+      if (diff.files.length < 300) {
+        hasMoreFiles = false;
+      } else {
+        page++;
+      }
+    }
+
+    return changed_files;
+  }
 
 async function getFileTree(github, octokit, core) {
     // get a list of files in the repo
