@@ -63,8 +63,10 @@ async function getChangedFiles(context, octokit, core) {
     });
 
     logMinimizer(core, 'DEBUG response compareCommits', diff)
+    core.info(`diff.files.size: ${diff.files.length}`)
     // Extract the list of changed files from the diff
     const changed_files = diff.files.map((file) => file.filename);
+    core.info(`changed_files.size: ${changed_files.length}`)
     return changed_files
 }
 
