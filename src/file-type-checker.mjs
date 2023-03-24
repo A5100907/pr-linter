@@ -1,9 +1,10 @@
 import { logMinimizer } from "./helpers.mjs"
 import { isText, isBinary } from "istextorbinary"
+// TODO
+let gcore
 
 async function fileTypeChecker(core, github, octokit) {
-    // TODO remove global
-    const gcore = core
+
 
     // main function to check file types
     let found_binaries = new Array()
