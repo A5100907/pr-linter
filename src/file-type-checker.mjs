@@ -92,7 +92,8 @@ async function getChangedFiles(context, octokit, core) {
         page,
       });
 
-      logMinimizer(core, `Page ${page} diff`, diff)
+      logMinimizer(core, `Page ${page} diff.files`, diff.files)
+      logMinimizer(core, `Page ${page} diff.files length`, diff.files.length)
       // Add the files from this page to the list of changed files
       const pageFiles = diff.files.map((file) => file.filename);
       changed_files = changed_files.concat(pageFiles);
