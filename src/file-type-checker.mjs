@@ -1,6 +1,6 @@
 import { logMinimizer } from "./helpers.mjs"
 import { isText, isBinary } from "istextorbinary"
-import { parseLinkHeader } from "parse-link-header"
+// import { parseLinkHeader } from "parse-link-header"
 
 async function fileTypeChecker(core, github, octokit) {
     // main function to check file types
@@ -111,7 +111,7 @@ async function fileTypeChecker(core, github, octokit) {
 //     return changed_files;
 //   }
 
-    async function getChangedFiles(context, octokit, core) {
+async function getChangedFiles(context, octokit, core) {
     const owner = context.payload.repository.owner.login
     const repo = context.payload.repository.name
     const pull_number = context.payload.pull_request.number
@@ -121,8 +121,8 @@ async function fileTypeChecker(core, github, octokit) {
         owner,
         repo,
         pull_number,
-    per_page: 100,
-    page: 1,
+        per_page: 100,
+        page: 1
     });
 
     // Extract the list of changed files from the list of files
@@ -134,7 +134,7 @@ async function fileTypeChecker(core, github, octokit) {
     logMinimizer(core, `changed_files.size:`, changed_files.length)
 
     return changed_files;
-    }
+}
 
     // async function getChangedFiles(context, octokit, core) {
     // const owner = context.payload.repository.owner.login
