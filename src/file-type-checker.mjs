@@ -177,10 +177,10 @@ async function getChangedFiles(context, octokit, core) {
     //     }
     // }
 
-    logMinimizer(core, `changed_files:`, changed_files)
-    logMinimizer(core, `changed_files.size:`, changed_files.length)
-    return changed_files;
-    }
+    // logMinimizer(core, `changed_files:`, changed_files)
+    // logMinimizer(core, `changed_files.size:`, changed_files.length)
+    // return changed_files;
+    // }
 
 
 
