@@ -1,16 +1,13 @@
 import { logMinimizer } from "./helpers.mjs"
 import { isText, isBinary } from "istextorbinary"
-// TODO
-let gcore
 
 async function fileTypeChecker(core, github, octokit) {
-
-
     // main function to check file types
     let found_binaries = new Array()
 
     core.info("Getting changed files ...")
-    const changed_files = await getChangedFiles(github.context, octokit)
+    // TODO remove core
+    const changed_files = await getChangedFiles(github.context, octokit, core)
     core.info(`Found ${changed_files.length} changed files`)
 
     // this filters out know text files by using file extension. This is a quick check to avoid checking the file type of every file
@@ -55,8 +52,8 @@ async function getChangedFiles(context, octokit) {
     const head_sha = context.payload.pull_request.head.sha
     const base_sha = context.payload.pull_request.base.sha
 
-    gcore.info('head_sha '+ context.payload.pull_request.head.sha)
-    gcore.info('base_sha '+ context.payload.pull_request.base.sha)
+    core.info('head_sha '+ context.payload.pull_request.head.sha)
+    core.info('base_sha '+ context.payload.pull_request.base.sha)
     // Get the diff between the head and base commits of the pull request
     const { data: diff } = await octokit.rest.repos.compareCommits({
         owner,
@@ -65,7 +62,7 @@ async function getChangedFiles(context, octokit) {
         head: head_sha,
     });
 
-    logMinimizer(gcore, 'DEBUG response compareCommits', diff)
+    logMinimizer(core, 'DEBUG response compareCommits', diff)
     // Extract the list of changed files from the diff
     const changed_files = diff.files.map((file) => file.filename);
     return changed_files
