@@ -128,6 +128,8 @@ async function getChangedFiles(context, octokit, core) {
             per_page: 100,
             page: current_page
         })
+        core.info(current_page)
+        logMinimizer(core, 'current files data:', response.data)
         full_files_data.concat(response.data)
         const parsed = parseLinkHeader(response.headers.link)
 
