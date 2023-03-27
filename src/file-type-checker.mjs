@@ -130,7 +130,7 @@ async function getChangedFiles(context, octokit, core) {
         })
         core.info(current_page)
         logMinimizer(core, 'current files data:', response.data)
-        full_files_data.concat(response.data)
+        full_files_data = full_files_data.concat(response.data)
         const parsed = parseLinkHeader(response.headers.link)
 
         if(!parsed.next) {
@@ -140,17 +140,20 @@ async function getChangedFiles(context, octokit, core) {
         current_page++
     }
     logMinimizer(core, 'all changed files data:', full_files_data)
+    logMinimizer(core, 'all changed files count:', full_files_data.length)
 
-    // const deleted_files = response.data
-    //     .filter((item) => item.status === "deleted")
-    //     .map((item) => item.name)
+    const deleted_files = response.data
+        .filter((item) => item.status === "removed")
+        .map((item) => item.filename)
 
-    // const changed_files = response.data
-    //     .filter((item) => item.status !== "deleted")
-    //     .map((item) => item.name)
+    const changed_files = response.data
+        .filter((item) => item.status !== "removed")
+        .map((item) => item.filename)
 
-    // logMinimizer(core, `Data Files:`, response.files)
-    // logMinimizer(core, `changed_files:`, changed_files)
+    logMinimizer(core, `deleted_files:`, deleted_files)
+    logMinimizer(core, `deleted_files_count:`, deleted_files.length)
+    logMinimizer(core, `changed_files:`, changed_files)
+    logMinimizer(core, `changed_files_count:`, changed_files.length)
 
     // return changed_files
 }
