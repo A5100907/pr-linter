@@ -1,5 +1,6 @@
 import { logMinimizer } from "./helpers.mjs"
 import { isText, isBinary } from "istextorbinary"
+import { parseLinkHeader } from '@web3-storage/parse-link-header'
 
 async function fileTypeChecker(core, github, octokit) {
     // main function to check file types
@@ -111,7 +112,6 @@ async function fileTypeChecker(core, github, octokit) {
 //   }
 
 async function getChangedFiles(context, octokit, core) {
-    let parse = await import('parse-link-header')
     const owner = context.payload.repository.owner.login
     const repo = context.payload.repository.name
     const pull_number = context.payload.pull_request.number
@@ -126,8 +126,9 @@ async function getChangedFiles(context, octokit, core) {
         page: 1
     })
 
-    const next_link_obj = parse(response.headers.link).next;
-    logMinimizer(core, 'next_link_obj', next_link_obj)
+    const parsed = parseLinkHeader(response.headers.link)
+    // const next_link_obj = parse(response.headers.link).next;
+    logMinimizer(core, 'parsed', parsed)
     // while (response.data.length > 0) {
     //     // Extract the list of changed files from the response
     //     // const files = response.data.map((file) => file.filename);
