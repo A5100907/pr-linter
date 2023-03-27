@@ -130,15 +130,13 @@ async function getChangedFiles(context, octokit, core) {
         })
         full_files_data.concat(response.data)
         const parsed = parseLinkHeader(response.headers.link)
+        core.info(current_page)
         logMinimizer(core, 'current page:', response.url)
-        logMinimizer(core, 'current number:', current_page)
         logMinimizer(core, 'All pages data:', parsed)
         logMinimizer(core, `response.headers.link:`, response.headers.link)
         logMinimizer(core, `Files on a page:`, response.data.size)
-        if(current_page == parsed.last.page) { break }
-        // TODO backup breakout
-        if(current_page == 5) {
-            core.info('HIT BACKUP BREAK!')
+        if(!parsed.next) {
+            //There are no more pages
             break
         }
         current_page++
