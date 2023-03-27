@@ -125,7 +125,9 @@ async function getChangedFiles(context, octokit, core) {
         page: 1
     });
 
-    logMinimizer(core, `response.data:`, response.data)
+
+    logMinimizer(core, `response:`, response)
+    logMinimizer(core, `response.data (files data):`, response.data)
     // Extract the list of changed files from the list of files
     const changed_files = response.data.map((file) => file.filename);
     logMinimizer(core, `changed_files:`, changed_files)
