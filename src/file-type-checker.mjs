@@ -1,7 +1,5 @@
 import { logMinimizer } from "./helpers.mjs"
 import { isText, isBinary } from "istextorbinary"
-// import { parseLinkHeader } from "parse-link-header"
-var parse = require('parse-link-header')
 
 async function fileTypeChecker(core, github, octokit) {
     // main function to check file types
@@ -113,6 +111,7 @@ async function fileTypeChecker(core, github, octokit) {
 //   }
 
 async function getChangedFiles(context, octokit, core) {
+    let parse = await import('parse-link-header')
     const owner = context.payload.repository.owner.login
     const repo = context.payload.repository.name
     const pull_number = context.payload.pull_request.number
