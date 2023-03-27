@@ -1,6 +1,7 @@
 import { logMinimizer } from "./helpers.mjs"
 import { isText, isBinary } from "istextorbinary"
-import { parseLinkHeader } from "parse-link-header"
+// import { parseLinkHeader } from "parse-link-header"
+var parse = require('parse-link-header')
 
 async function fileTypeChecker(core, github, octokit) {
     // main function to check file types
@@ -126,8 +127,8 @@ async function getChangedFiles(context, octokit, core) {
         page: 1
     })
 
-    const next_link = parseLinkHeader(response.headers.link).next;
-    logMinimizer(core, 'next_link_obj', next_link)
+    const next_link_obj = parse(response.headers.link).next;
+    logMinimizer(core, 'next_link_obj', next_link_obj)
     // while (response.data.length > 0) {
     //     // Extract the list of changed files from the response
     //     // const files = response.data.map((file) => file.filename);
