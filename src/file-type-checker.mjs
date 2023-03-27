@@ -121,6 +121,7 @@ async function getChangedFiles(context, octokit, core) {
     let full_files_data = []
 
     while (true) {
+        // Get page of data
         let response = await octokit.rest.pulls.listFiles({
             owner,
             repo,
@@ -128,34 +129,34 @@ async function getChangedFiles(context, octokit, core) {
             per_page: 100,
             page: current_page
         })
-        core.info(current_page)
-        logMinimizer(core, 'current files data:', response.data)
-        full_files_data = full_files_data.concat(response.data)
-        const parsed = parseLinkHeader(response.headers.link)
 
+        // add data to a full list
+        full_files_data = full_files_data.concat(response.data)
+
+        // get next page
+        const parsed = parseLinkHeader(response.headers.link)
         if(!parsed.next) {
             //There are no more pages
             break
         }
         current_page++
     }
-    logMinimizer(core, 'all changed files data:', full_files_data)
-    logMinimizer(core, 'all changed files count:', full_files_data.length)
 
-    const deleted_files = response.data
+    // Filter files that were removed from src and should be ignored
+    const deleted_files = full_files_data
         .filter((item) => item.status === "removed")
         .map((item) => item.filename)
 
-    const changed_files = response.data
+    // Filter files that need to be checked
+    const changed_files = full_files_data
         .filter((item) => item.status !== "removed")
         .map((item) => item.filename)
 
-    logMinimizer(core, `deleted_files:`, deleted_files)
-    logMinimizer(core, `deleted_files_count:`, deleted_files.length)
-    logMinimizer(core, `changed_files:`, changed_files)
-    logMinimizer(core, `changed_files_count:`, changed_files.length)
+    core.info(`Total files in a Pull Request: ${full_files_data.length}`)
+    core.info(`Removed files count: ${deleted_files.length}`)
+    core.info(`Added or modified files count: ${changed_files.length}`)
 
-    // return changed_files
+    return changed_files
 }
 
 // TODO implement pagination
