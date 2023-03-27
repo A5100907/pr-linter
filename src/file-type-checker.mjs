@@ -127,9 +127,18 @@ async function getChangedFiles(context, octokit, core) {
 
     logMinimizer(core, `response.data:`, response.data)
     // Extract the list of changed files from the list of files
-    const changed_files = response.data.files.map((file) => file.filename);
+    const changed_files = response.data.map((file) => file.filename);
     logMinimizer(core, `changed_files:`, changed_files)
-    logMinimizer(core, `changed_files.size:`, changed_files.length)
+    logMinimizer(core, `total changed_files.size:`, changed_files.length)
+
+    // TODO Implement filtering
+    // const deletedNames = response.data
+    //     .filter((item) => item.status === "deleted")
+    //     .map((item) => item.name)
+
+    // const otherNames = response.data
+    //     .filter((item) => item.status !== "deleted")
+    //     .map((item) => item.name)
 
     // logMinimizer(core, `Data Files:`, response.files)
     // logMinimizer(core, `changed_files:`, changed_files)
