@@ -117,53 +117,32 @@ async function getChangedFiles(context, octokit, core) {
     const pull_number = context.payload.pull_request.number
 
     // Get the list of files modified in the pull request
-    let changed_files = []
-    let response = await octokit.rest.pulls.listFiles({
-        owner,
-        repo,
-        pull_number,
-        per_page: 100,
-        page: 1
-    })
+    let current_page = 1
+    let full_files_data = []
 
-    const parsed = parseLinkHeader(response.headers.link)
-    // const next_link_obj = parse(response.headers.link).next;
-    logMinimizer(core, 'parsed', parsed)
-    // while (response.data.length > 0) {
-    //     // Extract the list of changed files from the response
-    //     // const files = response.data.map((file) => file.filename);
-    //     // changed_files = changed_files.concat(files);
-    //     logMinimizer(core, `response.url:`, response.url)
-    //     logMinimizer(core, `response.headers.link:`, response.headers.link)
-
-    //     // Check if there are more pages of results
-    //     if (response.headers.link) {
-    //         const next_link = parseLinkHeader(response.headers.link).next;
-    //         if (next_link) {
-    //             const next_page = parseInt(next_link.match(/page=(\d+)/)[1], 10);
-    //             response = await octokit.rest.pulls.listFiles({
-    //                 owner,
-    //                 repo,
-    //                 pull_number,
-    //                 per_page: 100,
-    //                 page: next_page,
-    //             });
-    //         } else {
-    //         // No more pages, break out of the loop
-    //         break;
-    //     }
-    //     } else {
-    //     // No more pages, break out of the loop
-    //     break;
-    //     }
-    // }
-
-    logMinimizer(core, `response:`, response)
-    logMinimizer(core, `response.data (files data):`, response.data)
-    // Extract the list of changed files from the list of files
-    // const changed_files = response.data.map((file) => file.filename);
-    // logMinimizer(core, `changed_files:`, changed_files)
-    // logMinimizer(core, `total changed_files.size:`, changed_files.length)
+    while (true) {
+        let response = await octokit.rest.pulls.listFiles({
+            owner,
+            repo,
+            pull_number,
+            per_page: 100,
+            page: current_page
+        })
+        full_files_data.concat(response.data)
+        const parsed = parseLinkHeader(response.headers.link)
+        logMinimizer(core, 'current page:', response.url)
+        logMinimizer(core, 'current number:', current_page)
+        logMinimizer(core, 'All pages data:', parsed)
+        logMinimizer(core, `response.headers.link:`, response.headers.link)
+        logMinimizer(core, `Files on a page:`, response.data.size)
+        if(current_page == parsed.last.page) { break }
+        // TODO backup breakout
+        if(current_page == 5) {
+            core.info('HIT BACKUP BREAK!')
+            break
+        }
+        current_page++
+    }
 
     // TODO Implement filtering
     // const deletedNames = response.data
@@ -177,7 +156,7 @@ async function getChangedFiles(context, octokit, core) {
     // logMinimizer(core, `Data Files:`, response.files)
     // logMinimizer(core, `changed_files:`, changed_files)
 
-    return changed_files;
+    // return changed_files
 }
 
 // TODO implement pagination
