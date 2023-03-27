@@ -117,21 +117,52 @@ async function getChangedFiles(context, octokit, core) {
     const pull_number = context.payload.pull_request.number
 
     // Get the list of files modified in the pull request
-    const response = await octokit.rest.pulls.listFiles({
+    let changed_files = []
+    let response = await octokit.rest.pulls.listFiles({
         owner,
         repo,
         pull_number,
         per_page: 100,
         page: 1
-    });
+    })
 
+    const next_link = parseLinkHeader(response.headers.link).next;
+    logMinimizer(core, 'next_link_obj', next_link)
+    // while (response.data.length > 0) {
+    //     // Extract the list of changed files from the response
+    //     // const files = response.data.map((file) => file.filename);
+    //     // changed_files = changed_files.concat(files);
+    //     logMinimizer(core, `response.url:`, response.url)
+    //     logMinimizer(core, `response.headers.link:`, response.headers.link)
+
+    //     // Check if there are more pages of results
+    //     if (response.headers.link) {
+    //         const next_link = parseLinkHeader(response.headers.link).next;
+    //         if (next_link) {
+    //             const next_page = parseInt(next_link.match(/page=(\d+)/)[1], 10);
+    //             response = await octokit.rest.pulls.listFiles({
+    //                 owner,
+    //                 repo,
+    //                 pull_number,
+    //                 per_page: 100,
+    //                 page: next_page,
+    //             });
+    //         } else {
+    //         // No more pages, break out of the loop
+    //         break;
+    //     }
+    //     } else {
+    //     // No more pages, break out of the loop
+    //     break;
+    //     }
+    // }
 
     logMinimizer(core, `response:`, response)
     logMinimizer(core, `response.data (files data):`, response.data)
     // Extract the list of changed files from the list of files
-    const changed_files = response.data.map((file) => file.filename);
-    logMinimizer(core, `changed_files:`, changed_files)
-    logMinimizer(core, `total changed_files.size:`, changed_files.length)
+    // const changed_files = response.data.map((file) => file.filename);
+    // logMinimizer(core, `changed_files:`, changed_files)
+    // logMinimizer(core, `total changed_files.size:`, changed_files.length)
 
     // TODO Implement filtering
     // const deletedNames = response.data
