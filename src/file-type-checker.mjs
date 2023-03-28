@@ -6,29 +6,19 @@ async function fileTypeChecker(core, github, octokit) {
     // main function to check file types
     let found_binaries = new Array()
 
+    // this gets a list of file objects containing info about each file that was added or edited (not removed) in the pull request
     core.info("Getting changed files ...")
     const changed_files = await getChangedFiles(github.context, octokit, core)
-    core.info(`Found ${changed_files.length} changed files`)
 
     // this filters out know text files by using file extension. This is a quick check to avoid checking the file type of every file
     // full list of known text extensions can be found here: https://raw.githubusercontent.com/bevry/textextensions/master/source/index.ts
     // every file that did not pass the filter will be checked for binary type using files content (blob) as well as its file extension
     const changed_non_text_files = changed_files.filter(file => !isText(file.filename))
-    core.info(`Found ${changed_non_text_files.length} files that needs explicit file type check (non in the list of known text files)`)
-    logMinimizer(core, "Changed files to explicitly check for type (FULL DATA)", changed_non_text_files)
-    logMinimizer(core, "Changed files to explicitly check for type", changed_non_text_files.map((item) => item.filename))
+    core.info(`Found ${changed_non_text_files.length} files that needs explicit file type check as they are not defined in the list of known text files`)
+    logMinimizer(core, "Changed files to explicitly check for a datatype:", changed_non_text_files.map((item) => item.filename))
 
     // if initial filter marks all files as text, skip the rest of check
     if (changed_non_text_files.length === 0) { return { result:true, binaries:found_binaries }}
-
-    // core.info("Getting repo's file tree ...")
-    // const file_tree = await getFileTree(github, octokit, core)
-    // // logMinimizer(core, "file tree:", file_tree)
-    // logMinimizer(core, "file tree size:", file_tree.length)
-    // // TODO Debug print
-    // for (let i = 0; i < file_tree.length; i++) {
-    //     core.info(`${file_tree[i].path}`)
-    // }
 
     core.info("Checking file types ...")
     for (let i = 0; i < changed_non_text_files.length; i++) {
@@ -90,28 +80,6 @@ async function getChangedFiles(context, octokit, core) {
 
     return changed_files
 }
-
-// async function getFileTree(github, octokit, core) {
-//     // get a list of files in the repo
-//     const { data: { commit: { sha } } } = await octokit.rest.repos.getBranch({
-//         owner: github.context.repo.owner,
-//         repo: github.context.repo.repo,
-//         branch: github.context.payload.pull_request.head.ref
-//     })
-//     core.info(`Branch: ${github.context.payload.pull_request.head.ref}`)
-//     core.info(`SHA: ${sha}`)
-
-//     const result = await octokit.rest.git.getTree({
-//         owner: github.context.repo.owner,
-//         repo: github.context.repo.repo,
-//         tree_sha: sha,
-//         recursive: true
-//     })
-//     // TODO
-//     logMinimizer(core, 'getTree response:', result)
-//     let tree = result.data
-//     return tree
-// }
 
 async function getFileBlob(github, octokit, file_sha) {
     // get the blob of a file
