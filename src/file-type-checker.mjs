@@ -56,7 +56,6 @@ async function getChangedFiles(context, octokit, core) {
             page: current_page
         })
 
-        logMinimizer(core, 'listFiles page:', response)
         // add data to a full list
         full_files_data = full_files_data.concat(response.data)
 
@@ -65,9 +64,13 @@ async function getChangedFiles(context, octokit, core) {
         if(response.headers.link) {
             const parsed = parseLinkHeader(response.headers.link)
             if(!parsed.next) {
-                //There are no more pages
+                // There are no more pages
                 break
             }
+        }
+        else {
+            // There is only one page
+            break
         }
 
         current_page++
