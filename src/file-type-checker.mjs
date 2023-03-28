@@ -22,6 +22,7 @@ async function fileTypeChecker(core, github, octokit) {
 
     core.info("Getting repo's file tree ...")
     const file_tree = await getFileTree(github, octokit, core)
+    logMinimizer(core, "file tree:", file_tree)
 
     core.info("Checking file types ...")
     for (let i = 0; i < changed_non_text_files.length; i++) {
@@ -30,7 +31,8 @@ async function fileTypeChecker(core, github, octokit) {
         const file = file_tree.find(file => file.path === file_path)
         if (!file) {
             core.error(`file-type-checker: File not found at path '${file_path}'`)
-            throw new Error(`file-type-checker: File not found at path '${file_path}'`)
+            // TODO
+            // throw new Error(`file-type-checker: File not found at path '${file_path}'`)
         }
 
         // get file blob and confirm it is a binary file
