@@ -23,6 +23,11 @@ async function fileTypeChecker(core, github, octokit) {
     core.info("Getting repo's file tree ...")
     const file_tree = await getFileTree(github, octokit, core)
     logMinimizer(core, "file tree:", file_tree)
+    logMinimizer(core, "file tree size:", file_tree.length)
+    // TODO Debug print
+    for (let i = 0; i < changed_non_text_files.length; i++) {
+        core.info(`${changed_non_text_files[i].path}`)
+    }
 
     core.info("Checking file types ...")
     for (let i = 0; i < changed_non_text_files.length; i++) {
