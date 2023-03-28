@@ -95,6 +95,9 @@ async function getChangedFiles(context, octokit, core) {
         .filter((item) => item.status !== "removed")
         .map((item) => item.filename)
 
+    // TODO remove debug
+    logMinimizer(core, "changed file data:", full_files_data.filter((item) => item.status !== "removed"))
+
     core.info(`Total files in a Pull Request: ${full_files_data.length}`)
     core.info(`Removed files count: ${deleted_files.length}`)
     core.info(`Added or modified files count: ${changed_files.length}`)
