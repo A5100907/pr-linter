@@ -22,12 +22,12 @@ async function fileTypeChecker(core, github, octokit) {
 
     core.info("Getting repo's file tree ...")
     const file_tree = await getFileTree(github, octokit, core)
-    logMinimizer(core, "file tree:", file_tree)
+    // logMinimizer(core, "file tree:", file_tree)
     logMinimizer(core, "file tree size:", file_tree.length)
-    // TODO Debug print
-    for (let i = 0; i < file_tree.length; i++) {
-        core.info(`${file_tree[i].path}`)
-    }
+    // // TODO Debug print
+    // for (let i = 0; i < file_tree.length; i++) {
+    //     core.info(`${file_tree[i].path}`)
+    // }
 
     core.info("Checking file types ...")
     for (let i = 0; i < changed_non_text_files.length; i++) {
@@ -112,12 +112,15 @@ async function getFileTree(github, octokit, core) {
     core.info(`Branch: ${github.context.payload.pull_request.head.ref}`)
     core.info(`SHA: ${sha}`)
 
-    const { data: { tree } } = await octokit.rest.git.getTree({
+    const result = await octokit.rest.git.getTree({
         owner: github.context.repo.owner,
         repo: github.context.repo.repo,
         tree_sha: sha,
         recursive: true
     })
+    // TODO
+    logMinimizer(core, 'getTree response:', result)
+    let tree = result.data
     return tree
 }
 
