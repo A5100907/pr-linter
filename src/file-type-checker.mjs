@@ -31,6 +31,7 @@ async function fileTypeChecker(core, github, octokit) {
         const file = file_tree.find(file => file.path === file_path)
         if (!file) {
             core.error(`file-type-checker: File not found at path '${file_path}'`)
+            continue
             // TODO
             // throw new Error(`file-type-checker: File not found at path '${file_path}'`)
         }
