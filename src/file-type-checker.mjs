@@ -56,6 +56,7 @@ async function getChangedFiles(context, octokit, core) {
             page: current_page
         })
 
+        logMinimizer(core, 'listFiles page:', response)
         // add data to a full list
         full_files_data = full_files_data.concat(response.data)
 
