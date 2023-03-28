@@ -60,11 +60,19 @@ async function getChangedFiles(context, octokit, core) {
         full_files_data = full_files_data.concat(response.data)
 
         // get info about next page
-        const parsed = parseLinkHeader(response.headers.link)
-        if(!parsed.next) {
-            //There are no more pages
+        // This checks if there is pagination data, as when GitHub only contains data for a less than a single page, there will be no info for next pages at all
+        if(response.headers.link) {
+            const parsed = parseLinkHeader(response.headers.link)
+            if(!parsed.next) {
+                // There are no more pages
+                break
+            }
+        }
+        else {
+            // There is only one page
             break
         }
+
         current_page++
     }
 
