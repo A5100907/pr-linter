@@ -19,7 +19,7 @@ inputs:
   enable_file_checker:
     description: "On/Off file type checker."
     required: false
-    default: true
+    default: false
 
 runs:
   using: "node16"
