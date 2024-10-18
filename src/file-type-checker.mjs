@@ -14,7 +14,14 @@ async function fileTypeChecker(core, github, octokit) {
     // full list of known text extensions can be found here: https://raw.githubusercontent.com/bevry/textextensions/master/source/index.ts
     // every file that did not pass the filter will be checked for binary type using files content (blob) as well as its file extension
     // exclude .nsi file types
-    const changed_non_text_files = changed_files.filter(file => !isText(file.filename)) && !file.filename.endsWith('.nsi')) 
+    const changed_non_text_files = changed_files.filter(file => {
+        // treat .nsi files as text files explicitly to avoid flagging them as binaries
+        if (file.filename.endsWith('.nsi')) {
+            core.info(`File at path ${file.filename} is a .nsi file, treating it as a text file.`)
+            return false;
+        }
+        return !isText(file.filename)
+    }) 
     core.info(`Found ${changed_non_text_files.length} files that needs explicit file type check as they are not defined in the list of known text files`)
     logMinimizer(core, "Changed files to explicitly check for a datatype:", changed_non_text_files.map((item) => item.filename))
 
