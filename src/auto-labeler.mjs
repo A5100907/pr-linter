@@ -41,12 +41,7 @@ function getProjectLabel(core, head) {
     core.info(`PR head: ${head}`)
     let items = new Array()
     items = head.split('/')
-    // operates on assumption that:
-    // 1 - if split produces 3 items; then 1st element is a project label
-    // 2 - if split produces 2 items and 2nd element is 'develop'; then 1st element is project label
-    // everything else is skipped (assumed a single project repo or invalid branch for labeler)
     if (items.length > 0) { return items }
-
     core.info("branch name did not qualify for a project label extraction.")
     return null
 }
