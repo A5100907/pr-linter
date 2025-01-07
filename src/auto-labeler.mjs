@@ -5,8 +5,8 @@ async function autoLabeler(core, github, octokit) {
     // return false if encountered an error, otherwise - true
     try {
         // get values for labeler execution
-        let pr_head = github.context.payload.pull_request.head.ref
-        let prj_label = getProjectLabel(core, pr_head)
+        let pr_base = github.context.payload.pull_request.base.ref
+        let prj_label = getProjectLabel(core, pr_base)
         
         if (prj_label) {
             // run labeler
@@ -46,8 +46,6 @@ function getProjectLabel(core, head) {
     // 2 - if split produces 2 items and 2nd element is 'develop'; then 1st element is project label
     // everything else is skipped (assumed a single project repo or invalid branch for labeler)
     if (items.length > 0) { return items }
-    // if (items.length == 3) { return items[0] }
-    // if ((items.length == 2) && (items[1].toLowerCase() == 'develop')) { return items[0] }
 
     core.info("branch name did not qualify for a project label extraction.")
     return null
