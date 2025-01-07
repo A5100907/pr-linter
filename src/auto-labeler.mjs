@@ -16,12 +16,13 @@ async function autoLabeler(core, github, octokit) {
             logMinimizer(core, "Labels currently attached to the PR", pr_labels)
             
             // check if pr already has expected label
-            if (pr_labels.indexOf(prj_label) > -1) { console.log(`PR already has the label '${prj_label}' attached.`) }
-            else { 
-                // add the label to the PR
-                let new_labels = new Array(prj_label)
-                await addLabels(core, github, octokit, new_labels)
-                core.info("Done.")
+            for (const label of prj_label) {
+                if (pr_labels.indexOf(label) > -1) { console.log(`PR already has the label '${label}' attached.`) }
+                else { 
+                    // add the label to the PR
+                    await addLabels(core, github, octokit, [label])
+                    core.info("Done.")
+                }
             }
         }
         else { core.info("Skipping auto-labeler.") }
@@ -44,8 +45,9 @@ function getProjectLabel(core, head) {
     // 1 - if split produces 3 items; then 1st element is a project label
     // 2 - if split produces 2 items and 2nd element is 'develop'; then 1st element is project label
     // everything else is skipped (assumed a single project repo or invalid branch for labeler)
-    if (items.length == 3) { return items[0] }
-    if ((items.length == 2) && (items[1].toLowerCase() == 'develop')) { return items[0] }
+    if (items.length > 0) { return items }
+    // if (items.length == 3) { return items[0] }
+    // if ((items.length == 2) && (items[1].toLowerCase() == 'develop')) { return items[0] }
 
     core.info("branch name did not qualify for a project label extraction.")
     return null
