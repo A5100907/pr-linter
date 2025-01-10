@@ -41,9 +41,7 @@ function getProjectLabel(core, head) {
     core.info(`PR head: ${head}`)
     let items = new Array()
     items = head.split('/')
-    if (items.length > 0) { return items }
-    core.info("branch name did not qualify for a project label extraction.")
-    return null
+    return items
 }
 
 async function addLabels(core, github, octokit, prj_labels) {
