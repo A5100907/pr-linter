@@ -18,6 +18,7 @@ async function autoLabeler(core, github, octokit) {
             // check if pr already has expected label
             const labelsToAdd = []
             for (const label of prj_label) {
+                core.info(label)
                 if (pr_labels.indexOf(label) > -1) { console.log(`PR already has the label '${label}' attached.`) }
                 else { 
                     // add the label to the PR
