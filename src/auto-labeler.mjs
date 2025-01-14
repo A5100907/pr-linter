@@ -52,7 +52,7 @@ function getProjectLabel(core, head) {
 async function addLabels(core, github, octokit, prj_labels) {
     try {
         // add specified label to current PR
-        core.info("Adding a label(s) to the PR ...")
+        core.info(`Adding a label(s) to the PR ... ${prj_labels}`)
         core.info(`repos owner: ${github.context.repo.owner}`)
         core.info(`repos name: ${github.context.repo.repo}`)
         core.info(`issue_number: ${github.context.payload.pull_request.number}`)
