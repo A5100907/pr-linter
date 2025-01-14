@@ -23,7 +23,7 @@ async function autoLabeler(core, github, octokit) {
                     labels_to_add.push(label)
                 }
             }
-            if (labelsToAdd.length > 0) {
+            if (labels_to_add.length > 0) {
                 await addLabels(core, github, octokit, labels_to_add)
                 core.info("Done.")
             }
