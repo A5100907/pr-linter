@@ -50,7 +50,7 @@ function getProjectLabel(core, head) {
 async function addLabels(core, github, octokit, prj_labels) {
     try {
         // add specified label to current PR
-        core.info(`Adding a label(s) to the PR ... ${prj_labels}`)
+        core.info("Adding a label(s) to the PR ...")
         core.info(`repos owner: ${github.context.repo.owner}`)
         core.info(`repos name: ${github.context.repo.repo}`)
         core.info(`issue_number: ${github.context.payload.pull_request.number}`)
@@ -60,9 +60,9 @@ async function addLabels(core, github, octokit, prj_labels) {
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
         })
-        const repo_labels = response.data.map(label => label.name);
-        const labels_to_create = prj_labels.filter(label => !repo_labels.includes(label));
-
+        const repo_labels = response.data.map(label => label.name)
+        const labels_to_create = prj_labels.filter(label => !repo_labels.includes(label))
+        logMinimizer(core, "label(s) to create", labels_to_create)
         for (const label of labels_to_create) {
             await octokit.rest.issues.createLabel({
                 owner: github.context.repo.owner,
