@@ -12,17 +12,20 @@ async function autoLabeler(core, github, octokit) {
             // run labeler
             const pr_labels_obj = await getIssueLabels(github, octokit)
             // convert full label data into a simple array of label names
-            let pr_labels = pr_labels_obj.map(function (item) { return item.name}) 
+            let pr_labels = pr_labels_obj.map(function (item) { return item.name.toLowerCase()}) 
             logMinimizer(core, "Labels currently attached to the PR", pr_labels)
             
             // check if pr already has expected label
+            const labels_to_add = []
             for (const label of prj_label) {
-                if (pr_labels.indexOf(label) > -1) { console.log(`PR already has the label '${label}' attached.`) }
-                else { 
-                    // add the label to the PR
-                    await addLabels(core, github, octokit, [label])
-                    core.info("Done.")
+                if (pr_labels.indexOf(label.toLowerCase()) > -1) { console.log(`PR already has the label '${label}' attached.`) }
+                else { // add the label to the PR
+                    labels_to_add.push(label.toLowerCase())
                 }
+            }
+            if (labels_to_add.length > 0) {
+                await addLabels(core, github, octokit, labels_to_add)
+                core.info("Done.")
             }
         }
         else { core.info("Skipping auto-labeler.") }
@@ -53,6 +56,21 @@ async function addLabels(core, github, octokit, prj_labels) {
         core.info(`issue_number: ${github.context.payload.pull_request.number}`)
         logMinimizer(core, "label(s) to add", prj_labels)
         
+        const response = await octokit.rest.issues.listLabelsForRepo({
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
+        })
+        const repo_labels = response.data.map(label => label.name.toLowerCase())
+        const labels_to_create = prj_labels.filter(label => !repo_labels.includes(label))
+        logMinimizer(core, "label(s) to create", labels_to_create)
+        for (const label of labels_to_create) {
+            await octokit.rest.issues.createLabel({
+                owner: github.context.repo.owner,
+                repo: github.context.repo.repo,
+                name: label
+            })
+        }
+
         await octokit.rest.issues.addLabels({
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
