@@ -56,14 +56,21 @@ async function addLabels(core, github, octokit, prj_labels) {
         core.info(`issue_number: ${github.context.payload.pull_request.number}`)
         logMinimizer(core, "label(s) to add", prj_labels)
         
-        const response = await octokit.rest.issues.listLabelsForRepo({
-            owner: github.context.repo.owner,
-            repo: github.context.repo.repo,
-            per_page: 100
-        })
-        const repo_labels = response.data.map(label => label.name.toLowerCase())
-        logMinimizer(core, "label(s) in repo", repo_labels)
-        const labels_to_create = prj_labels.map(label => label.toLowerCase()).filter(label => !repo_labels.includes(label))
+        const total_repo_labels = []
+        let page = 0
+        do {
+            const response = await octokit.rest.issues.listLabelsForRepo({
+                owner: github.context.repo.owner,
+                repo: github.context.repo.repo,
+                per_page: 100,
+                page: page
+            })
+            const repo_labels = response.data.map(label => label.name.toLowerCase())
+            total_repo_labels.push(...repo_labels)
+            page++
+        } while (repo_labels.length >= 100)
+        logMinimizer(core, "label(s) in repo", total_repo_labels)
+        const labels_to_create = prj_labels.map(label => label.toLowerCase()).filter(label => !total_repo_labels.includes(label))
         logMinimizer(core, "label(s) to create", labels_to_create)
         for (const label of labels_to_create) {
             await octokit.rest.issues.createLabel({
