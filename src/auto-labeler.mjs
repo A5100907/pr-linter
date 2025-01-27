@@ -61,7 +61,7 @@ async function addLabels(core, github, octokit, prj_labels) {
             repo: github.context.repo.repo,
         })
         const repo_labels = response.data.map(label => label.name.toLowerCase())
-        const labels_to_create = prj_labels.filter(label => !repo_labels.includes(label))
+        const labels_to_create = prj_labels.map(label => label.toLowerCase()).filter(label => !repo_labels.includes(label))
         logMinimizer(core, "label(s) to create", labels_to_create)
         for (const label of labels_to_create) {
             await octokit.rest.issues.createLabel({
