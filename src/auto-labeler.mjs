@@ -59,6 +59,7 @@ async function addLabels(core, github, octokit, prj_labels) {
         const response = await octokit.rest.issues.listLabelsForRepo({
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
+            per_page: 100
         })
         const repo_labels = response.data.map(label => label.name.toLowerCase())
         logMinimizer(core, "label(s) in repo", repo_labels)
