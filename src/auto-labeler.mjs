@@ -57,7 +57,7 @@ async function addLabels(core, github, octokit, prj_labels) {
         logMinimizer(core, "label(s) to add", prj_labels)
         
         const total_repo_labels = []
-        let repo_labels
+        let repo_labels = []
         let page = 0
         do {
             const response = await octokit.rest.issues.listLabelsForRepo({
