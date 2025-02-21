@@ -98,13 +98,17 @@ async function getChangedFiles(context, octokit, core) {
 }
 
 async function getFileBlob(github, octokit, file_sha) {
-    // get the blob of a file
-    const { data: { content } } = await octokit.rest.git.getBlob({
-        owner: github.context.repo.owner,
-        repo: github.context.repo.repo,
-        sha: file_sha
-    })
-    return Buffer.from(content, 'base64')
+    try {
+        const { data: { content } } = await octokit.rest.git.getBlob({
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
+            sha: file_sha
+        })
+        return Buffer.from(content, 'base64')
+    } catch (error) {
+        core.error(`Failed to fetch blob for SHA ${file_sha}: ${error.message}`)
+        throw error // Rethrow for higher-level handling
+    }
 }
 
 export { fileTypeChecker }
