@@ -33,7 +33,7 @@ async function fileTypeChecker(core, github, octokit) {
         const file_path = changed_non_text_files[i].filename
         const file_sha = changed_non_text_files[i].sha
         // get file blob and confirm it is a binary file
-        const file_blob = await getFileBlob(github, octokit, file_sha)
+        const file_blob = await getFileBlob(github, octokit, file_sha, core)
         if (isBinary(file_path, file_blob)) {
             core.error(`File at path: ${file_path} is a binary file`)
             found_binaries.push(file_path)
@@ -97,7 +97,7 @@ async function getChangedFiles(context, octokit, core) {
     return changed_files
 }
 
-async function getFileBlob(github, octokit, file_sha) {
+async function getFileBlob(github, octokit, file_sha, core) {
     try {
         const { data: { content } } = await octokit.rest.git.getBlob({
             owner: github.context.repo.owner,
