@@ -103,13 +103,13 @@ async function getFileBlob(github, octokit, file_sha) {
         const { data: { content } } = await octokit.rest.git.getBlob({
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
-            sha: file_sha
+            file_sha: file_sha
         })
         return Buffer.from(content, 'base64')
     }
     catch (error) {
         if (error.status === 404) {
-            console.warn(`Error -> ${error}`);
+            console.warn(`Warning: ${error.message}`);
             console.warn(`Warning: Blob not found for SHA ${file_sha}. Marking as binary.`);
             return "404";
         } else {
