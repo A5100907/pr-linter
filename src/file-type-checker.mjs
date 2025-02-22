@@ -102,7 +102,7 @@ async function getFileBlob(github, octokit, file_sha, core) {
         const { data: { content } } = await octokit.rest.git.getBlob({
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
-            sha: file_sha
+            file_sha: file_sha
         })
         return Buffer.from(content, 'base64')
     } catch (error) {
