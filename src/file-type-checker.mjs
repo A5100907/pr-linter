@@ -109,6 +109,7 @@ async function getFileBlob(github, octokit, file_sha) {
     }
     catch (error) {
         if (error.status === 404) {
+            console.warn(`Error found: ${error}`);
             console.warn(`Warning: Blob not found for SHA ${file_sha}. Marking as binary.`);
             return true;
         } else {
