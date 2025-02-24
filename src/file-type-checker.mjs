@@ -34,7 +34,7 @@ async function fileTypeChecker(core, github, octokit) {
         const file_sha = changed_non_text_files[i].sha
         // get file blob and confirm it is a binary file
         const file_blob = await getFileBlob(github, octokit, file_sha)
-        if (isBinary(file_path, file_blob)) {
+        if (isBinary(file_path, file_blob) || file_blob === "404") {
             core.error(`File at path: ${file_path} is a binary file`)
             found_binaries.push(file_path)
         }
@@ -98,13 +98,25 @@ async function getChangedFiles(context, octokit, core) {
 }
 
 async function getFileBlob(github, octokit, file_sha) {
-    // get the blob of a file
-    const { data: { content } } = await octokit.rest.git.getBlob({
-        owner: github.context.repo.owner,
-        repo: github.context.repo.repo,
-        file_sha: file_sha
-    })
-    return Buffer.from(content, 'base64')
+    try {
+        // get the blob of a file
+        const { data: { content } } = await octokit.rest.git.getBlob({
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
+            file_sha: file_sha
+        })
+        return Buffer.from(content, 'base64')
+    }
+    catch (error) {
+        if (error.status === 404) {
+            console.warn(`Warning: ${error.message}`);
+            console.warn(`Warning: Blob not found for SHA ${file_sha}. Marking as binary.`);
+            return "404";
+        } else {
+            console.error(`Error fetching blob for SHA ${file_sha}: ${error.message}`);
+            throw error; // Only throw if it's not a 404
+        }
+    }
 }
 
 export { fileTypeChecker }
