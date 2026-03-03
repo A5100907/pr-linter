@@ -16,8 +16,8 @@ async function fileTypeChecker(core, github, octokit) {
     // exclude .nsi file types
     const changed_non_text_files = changed_files.filter(file => {
         // treat .nsi files as text files explicitly to avoid flagging them as binaries
-        if (file.filename.endsWith('.nsi')) {
-            core.info(`File at path ${file.filename} is a .nsi file, treating it as a text file.`)
+        if (file.filename.endsWith('.nsi') || file.filename.endsWith('.fakes')) {
+            core.info(`File at path ${file.filename} is a configuration file, treating it as a text file.`)
             return false;
         }
         return !isText(file.filename)
